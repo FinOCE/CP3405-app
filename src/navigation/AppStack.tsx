@@ -1,7 +1,11 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import Home from "pages/Home"
 
-const { Navigator, Screen } = createStackNavigator()
+export type AppStackParamList = {
+  Home: undefined
+}
+
+const { Navigator, Screen } = createStackNavigator<AppStackParamList>()
 
 export default function AppStack() {
   return (
