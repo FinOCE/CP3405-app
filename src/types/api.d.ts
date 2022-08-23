@@ -64,4 +64,18 @@ declare namespace API {
     label: L
     properties: VertexProperties<T>
   }
+
+  /**
+   * Response type for requests returning a user token
+   */
+  type Token = {
+    token: string
+  }
+
+  /**
+   * Response type for requests returning an error
+   */
+  type Error = {
+    message: string
+  }
 }
