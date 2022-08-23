@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button, StyleSheet, Text, TextInput, View } from "react-native"
 import fetch from "node-fetch"
 import StorageManager from "managers/StorageManager"
+import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 
 export default function Register({
   route,
@@ -54,28 +55,21 @@ export default function Register({
         disabled={submitting}
         onPress={() => {
           setSubmitting(true)
-          fetch("https://cp3405-api.azurewebsites.net/register", {
-            method: "POST",
-            body: JSON.stringify({
-              email,
-              password,
-              firstName,
-              lastName,
-              nickName
+
+          new RequestBuilder()
+            .setRoute("/register")
+            .setMethod(HttpMethod.Post)
+            .setBody({ email, password, firstName, lastName, nickName })
+            .on<API.Token>(HttpStatus.Ok, body => {
+              StorageManager.set("@user", body.data.token)
             })
-          })
-            .then(async res => ({ status: res.status, body: await res.json() }))
-            .then(({ status, body }) => {
-              switch (status) {
-                case 200:
-                  StorageManager.set("@user", body.data.token)
-                  break
-                case 400:
-                case 409:
-                  throw body.data.message
-              }
+            .on<API.Error>(HttpStatus.BadRequest, body => {
+              setError(body.data.message)
             })
-            .catch((err: string) => setError(err))
+            .on<API.Error>(HttpStatus.Conflict, body => {
+              setError(body.data.message)
+            })
+            .submit()
             .finally(() => setSubmitting(false))
         }}
       />
