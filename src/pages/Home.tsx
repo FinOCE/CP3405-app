@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { AppStackParamList } from "navigation/AppStack"
+import { HomeStackParamList } from "navigation/AppStack"
 import {
   SafeAreaView,
   Image,
@@ -111,42 +111,10 @@ const styles = StyleSheet.create({
 export default function Home({
   route,
   navigation
-}: NativeStackScreenProps<AppStackParamList, "Home">) {
+}: NativeStackScreenProps<HomeStackParamList, "Home">) {
   return (
     <View style={styles.container}>
-      <View style={{ flex: 5 }}>
-        <App />
-      </View>
-      <View style={{ flex: 1 }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "flex-start"
-          }}
-        >
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "red" }} />
-          </View>
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "blue" }}>
-              <Button
-                title="Home"
-                onPress={() => navigation.navigate("Home")}
-              />
-            </View>
-          </View>
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "red" }}>
-              <Button
-                title="Settings"
-                onPress={() => navigation.navigate("Settings")}
-              />
-            </View>
-          </View>
-        </View>
-      </View>
+      <App />
       <StatusBar style="auto" />
     </View>
   )
