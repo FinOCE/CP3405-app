@@ -35,7 +35,7 @@ export default function MainNavigation() {
 
   return (
     <NavigationContainer>
-      {user ? <AppStack /> : <AuthStack />}
+      {user ? <AppStack user={user} /> : <AuthStack />}
     </NavigationContainer>
   )
 }

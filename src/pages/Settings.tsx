@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { AppStackParamList } from "navigation/AppStack"
+import { SettingsStackParamList } from "navigation/AppStack"
 import { View, StyleSheet, Text, Button } from "react-native"
 
 const styles = StyleSheet.create({
@@ -21,43 +21,10 @@ const styles = StyleSheet.create({
 export default function Settings({
   route,
   navigation
-}: NativeStackScreenProps<AppStackParamList, "Settings">) {
+}: NativeStackScreenProps<SettingsStackParamList, "Settings">) {
   return (
     <View style={styles.container}>
-      <View style={{ flex: 5 }}>
-        <Text>Settings</Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "flex-start"
-          }}
-        >
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "red" }} />
-          </View>
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "blue" }}>
-              <Button
-                title="Home"
-                onPress={() => navigation.navigate("Home")}
-              />
-            </View>
-          </View>
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "red" }}>
-              <Button
-                title="Settings"
-                onPress={() => navigation.navigate("Settings")}
-              />
-            </View>
-          </View>
-        </View>
-      </View>
-
+      <Text>Settings</Text>
       <StatusBar style="auto" />
     </View>
   )
