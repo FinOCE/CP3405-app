@@ -2,10 +2,12 @@ import { createStackNavigator } from "@react-navigation/stack"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Home from "pages/Home"
+import Share from "pages/Share"
 import Settings from "pages/Settings"
 
 export type HomeStackParamList = {
   Home: undefined
+  Share: { url: string }
 }
 
 function HomeStack() {
@@ -13,6 +15,7 @@ function HomeStack() {
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="Home" component={Home} />
+      <Screen name="Share" component={Share} initialParams={{ url: 'https://example.com' }} />
     </Navigator>
   )
 }
