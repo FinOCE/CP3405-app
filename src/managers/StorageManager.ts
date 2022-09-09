@@ -1,6 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import EventEmitter from "events"
 
-export default class StorageManager {
+export default class StorageManager extends EventEmitter {
+  private static instance?: StorageManager
+
+  /**
+   * Get the singleton instance of the storage manager
+   */
+  public static getInstance(): StorageManager {
+    if (!StorageManager.instance) StorageManager.instance = new StorageManager()
+    return StorageManager.instance
+  }
+
   /**
    * Get a value from storage
    * @param key The key of the value you wish to obtain
@@ -8,7 +19,9 @@ export default class StorageManager {
    */
   public static async get(key: string): Promise<string | null> {
     try {
-      return await AsyncStorage.getItem(key)
+      const value = await AsyncStorage.getItem(key)
+      this.getInstance().emit("get", key, value)
+      return value
     } catch (err) {
       return null
     }
@@ -23,6 +36,7 @@ export default class StorageManager {
   public static async set(key: string, value: string): Promise<boolean> {
     try {
       await AsyncStorage.setItem(key, value)
+      this.getInstance().emit("set", key, value)
       return true
     } catch (err) {
       return false
@@ -37,6 +51,7 @@ export default class StorageManager {
   public static async remove(key: string): Promise<boolean> {
     try {
       await AsyncStorage.removeItem(key)
+      this.getInstance().emit("remove", key)
       return true
     } catch (err) {
       return false
@@ -50,8 +65,9 @@ export default class StorageManager {
    */
   public static async exists(key: string): Promise<boolean> {
     try {
-      await AsyncStorage.getItem(key)
-      return key !== null
+      const exists = (await AsyncStorage.getItem(key)) !== null
+      this.getInstance().emit("exists", key, exists)
+      return exists
     } catch (err) {
       return false
     }
