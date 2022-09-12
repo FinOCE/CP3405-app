@@ -118,43 +118,8 @@ export default function Home({
 }: NativeStackScreenProps<HomeStackParamList, "Home">) {
   return (
     <View style={styles.container}>
-      <View style={{ flex: 5 }}>
+      <View>
         <AppList />
-      </View>
-      <View style={{ flex: 1 }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "flex-start"
-          }}
-        >
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "red" }}>
-              <Button
-                title="HomeChild"
-                onPress={() => navigation.navigate("HomeChild")}
-              />
-            </View>
-          </View>
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "blue" }}>
-              <Button
-                title="Home"
-                onPress={() => navigation.navigate("Home")}
-              />
-            </View>
-          </View>
-          <View style={{ width: "30%" }}>
-            <View style={{ width: 100, height: 100, backgroundColor: "red" }}>
-              <Button
-                title="Settings"
-                onPress={() => navigation.navigate("Settings")}
-              />
-            </View>
-          </View>
-        </View>
       </View>
       <StatusBar style="auto" />
     </View>
