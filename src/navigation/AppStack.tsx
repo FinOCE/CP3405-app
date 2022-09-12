@@ -15,7 +15,11 @@ function HomeStack() {
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="Home" component={Home} />
-      <Screen name="Share" component={Share} initialParams={{ url: 'https://example.com' }} />
+      <Screen
+        name="Share"
+        component={Share}
+        initialParams={{ url: "https://example.com" }}
+      />
     </Navigator>
   )
 }
