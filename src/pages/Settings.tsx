@@ -1,7 +1,32 @@
+import * as React from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { AppStackParamList } from "navigation/AppStack"
 import { View, StyleSheet, Text, Button } from "react-native"
+import { List } from "react-native-paper"
+
+const MyComponent = () => {
+  const [expanded, setExpanded] = React.useState(true)
+
+  const handlePress = () => setExpanded(!expanded)
+
+  return (
+    <List.Section title="Settings">
+      <List.Accordion title="Display Setting">
+        <List.Item title="First item" />
+        <List.Item title="Second item" />
+      </List.Accordion>
+      <List.Accordion title="App Setting">
+        <List.Item title="First item" />
+        <List.Item title="Second item" />
+      </List.Accordion>
+      <List.Accordion title="User Setting">
+        <List.Item title="First item" />
+        <List.Item title="Second item" />
+      </List.Accordion>
+    </List.Section>
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -26,6 +51,7 @@ export default function Settings({
     <View style={styles.container}>
       <View style={{ flex: 5 }}>
         <Text>Settings</Text>
+        <MyComponent />
       </View>
       <View style={{ flex: 1 }}>
         <View
