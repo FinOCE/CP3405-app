@@ -1,7 +1,7 @@
 import * as React from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { AppStackParamList } from "navigation/AppStack"
+import { SettingsStackParamList } from "navigation/AppStack"
 import { View, StyleSheet, Text, Button } from "react-native"
 import { List } from "react-native-paper"
 
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 export default function Settings({
   route,
   navigation
-}: NativeStackScreenProps<AppStackParamList, "Settings">) {
+}: NativeStackScreenProps<SettingsStackParamList, "Settings">) {
   return (
     <View style={styles.container}>
       <View style={{ flex: 5 }}>

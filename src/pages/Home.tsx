@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { AppStackParamList } from "navigation/AppStack"
+import { HomeStackParamList } from "navigation/AppStack"
 import {
   SafeAreaView,
   Image,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 export default function Home({
   route,
   navigation
-}: NativeStackScreenProps<AppStackParamList, "Home">) {
+}: NativeStackScreenProps<HomeStackParamList, "Home">) {
   return (
     <View style={styles.container}>
       <View style={{ flex: 5 }}>

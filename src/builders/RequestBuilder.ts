@@ -49,7 +49,7 @@ export default class RequestBuilder {
    * Submit the request to the API
    */
   public async submit(): Promise<void> {
-    await fetch("https://cp3405-api.azuresites.net" + this.route, {
+    await fetch("https://cp3405-api.azurewebsites.net" + this.route, {
       method: HttpMethod[this.method].toUpperCase(),
       body: JSON.stringify(this.body)
     })
