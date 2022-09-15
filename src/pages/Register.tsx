@@ -2,8 +2,14 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { AuthStackParamList } from "navigation/AuthStack"
 import { useState } from "react"
-import { Button, StyleSheet, Text, TextInput, View } from "react-native"
-import fetch from "node-fetch"
+import {
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native"
 import StorageManager from "managers/StorageManager"
 import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 
@@ -16,6 +22,7 @@ export default function Register({
   const [firstName, setFirstName] = useState<string>()
   const [lastName, setLastName] = useState<string>()
   const [nickName, setNickName] = useState<string>()
+  const [role, setRole] = useState<"Parent" | "Child">("Parent")
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string>()
@@ -49,6 +56,26 @@ export default function Register({
         placeholder="Nickname"
         onChangeText={setNickName}
       />
+      <View style={{ marginVertical: 10 }}>
+        <TouchableOpacity
+          onPress={() => setRole("Parent")}
+          style={{
+            backgroundColor: role === "Parent" ? "#f9c2ff" : undefined,
+            padding: 10
+          }}
+        >
+          I need help with my using my device (Parent)
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setRole("Child")}
+          style={{
+            backgroundColor: role === "Child" ? "#f9c2ff" : undefined,
+            padding: 10
+          }}
+        >
+          I want to help someone using their device (Child)
+        </TouchableOpacity>
+      </View>
       {error && <Text style={styles.error}>Error: {error}</Text>}
       <Button
         title="Register"
@@ -59,7 +86,7 @@ export default function Register({
           new RequestBuilder()
             .setRoute("/register")
             .setMethod(HttpMethod.Post)
-            .setBody({ email, password, firstName, lastName, nickName })
+            .setBody({ email, password, firstName, lastName, nickName, role })
             .on<API.Token>(HttpStatus.Ok, body => {
               StorageManager.set("@user", body.data.token)
             })

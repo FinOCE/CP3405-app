@@ -48,7 +48,7 @@ export default function Login({
               setError(body.data.message)
             })
             .on<API.Error>(HttpStatus.Forbidden, body => {
-              setError(body.data.message)
+              setError("Could not find a user with given email and password")
             })
             .submit()
             .finally(() => setSubmitting(false))
