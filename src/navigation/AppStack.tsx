@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import Home from "pages/Home"
 import Share from "pages/Share"
 import Settings from "pages/Settings"
+import Notify from "pages/Notify"
 
 export type HomeStackParamList = {
   Home: undefined
@@ -24,21 +25,19 @@ function HomeStack() {
   )
 }
 
-// TODO: Remove comments on notification-related items once that page is created (not in this branch)
+export type NotificationsStackParamList = {
+  Notify: undefined
+}
 
-// export type NotificationsStackParamList = {
-//   Notifications: undefined
-// }
-
-// function NotificationsStack() {
-//   const { Navigator, Screen } =
-//     createStackNavigator<NotificationsStackParamList>()
-//   return (
-//     <Navigator screenOptions={{ headerShown: false }}>
-//       <Screen name="Notifications" component={Notifications} />
-//     </Navigator>
-//   )
-// }
+function NotificationsStack() {
+  const { Navigator, Screen } =
+    createStackNavigator<NotificationsStackParamList>()
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="Notifications" component={Notify} />
+    </Navigator>
+  )
+}
 
 export type SettingsStackParamList = {
   Settings: undefined
@@ -59,7 +58,7 @@ export type AppStackProps = {
 
 export type AppStackParamList = {
   HomeStack: undefined
-  // NotificationsStack: undefined
+  NotificationsStack: undefined
   SettingsStack: undefined
 }
 
@@ -78,7 +77,7 @@ export default function AppStack({ user }: AppStackProps) {
           )
         }}
       />
-      {/* <Screen
+      <Screen
         name="NotificationsStack"
         component={NotificationsStack}
         options={{
@@ -88,7 +87,7 @@ export default function AppStack({ user }: AppStackProps) {
           ),
           tabBarBadge: undefined // Fetch notification count to fill here (as a number)
         }}
-      /> */}
+      />
       <Screen
         name="SettingsStack"
         component={SettingsStack}
@@ -99,7 +98,6 @@ export default function AppStack({ user }: AppStackProps) {
           )
         }}
       />
-      {/* For notifications, we can use options={{  }} to show unseen notification count */}
       {/* Icons may not work, if so follow guide on https://github.com/oblador/react-native-vector-icons to implement natively */}
     </Navigator>
   )

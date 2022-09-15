@@ -52,7 +52,7 @@ declare namespace API {
     [K in keyof T]: {
       id: string
       value: T[K]
-    }
+    }[]
   }
 
   /**
