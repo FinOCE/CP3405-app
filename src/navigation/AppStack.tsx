@@ -4,16 +4,21 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import Home from "pages/Home"
 import Share from "pages/Share"
 import Settings from "pages/Settings"
+import User from "pages/user"
 
 export type HomeStackParamList = {
   Home: undefined
   Share: { url: string }
+  User: undefined
+  UserChild: undefined
+  HomeChild: undefined
 }
 
 function HomeStack() {
   const { Navigator, Screen } = createStackNavigator<HomeStackParamList>()
   return (
     <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="User" component={User} />
       <Screen name="Home" component={Home} />
       <Screen
         name="Share"
