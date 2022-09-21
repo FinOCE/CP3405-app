@@ -2,19 +2,24 @@ import { createStackNavigator } from "@react-navigation/stack"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Home from "pages/Home"
+import Notify from "pages/Notify"
 import Share from "pages/Share"
 import Settings from "pages/Settings"
-import Notify from "pages/Notify"
+import User from "pages/user"
 
 export type HomeStackParamList = {
   Home: undefined
   Share: { url: string }
+  User: undefined
+  UserChild: undefined
+  HomeChild: undefined
 }
 
 function HomeStack() {
   const { Navigator, Screen } = createStackNavigator<HomeStackParamList>()
   return (
     <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="User" component={User} />
       <Screen name="Home" component={Home} />
       <Screen
         name="Share"
@@ -34,7 +39,7 @@ function NotificationsStack() {
     createStackNavigator<NotificationsStackParamList>()
   return (
     <Navigator screenOptions={{ headerShown: false }}>
-      <Screen name="Notifications" component={Notify} />
+      <Screen name="Notify" component={Notify} />
     </Navigator>
   )
 }

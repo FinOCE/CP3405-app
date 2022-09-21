@@ -53,7 +53,6 @@ export default function Settings({
         <Text>Settings</Text>
         <MyComponent />
       </View>
-
       <StatusBar style="auto" />
     </View>
   )
