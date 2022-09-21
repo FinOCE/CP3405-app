@@ -39,21 +39,24 @@ const DATA2: User[] = [
     firstName: "First",
     lastName: "Last",
     nickName: "Nickname",
-    dateOfBirth: 0
+    dateOfBirth: 0,
+    role: "Child"
   },
   {
     userId: "2",
     firstName: "First",
     lastName: "Last",
     nickName: "Nickname",
-    dateOfBirth: 0
+    dateOfBirth: 0,
+    role: "Child"
   },
   {
     userId: "3",
     firstName: "First",
     lastName: "Last",
     nickName: "Nickname",
-    dateOfBirth: 0
+    dateOfBirth: 0,
+    role: "Child"
   }
 ]
 // end of data sets

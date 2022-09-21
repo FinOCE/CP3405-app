@@ -2,29 +2,48 @@ import { createStackNavigator } from "@react-navigation/stack"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Home from "pages/Home"
-import Notify from "pages/Notify"
+import HomeChild from "pages/HomeChild"
 import Share from "pages/Share"
 import Settings from "pages/Settings"
-import User from "pages/user"
+import Notify from "pages/Notify"
+import { useEffect, useState } from "react"
+import StorageManager from "managers/StorageManager"
+import UserChild from "pages/UserChild"
+import User from "pages/User"
 
 export type HomeStackParamList = {
   Home: undefined
   Share: { url: string }
   User: undefined
-  UserChild: undefined
-  HomeChild: undefined
 }
 
 function HomeStack() {
   const { Navigator, Screen } = createStackNavigator<HomeStackParamList>()
+
+  const [user, setUser] = useState<User>()
+
+  useEffect(() => {
+    // Fetch user from storage
+    StorageManager.get("@user").then(userDeserialized => {
+      const buffer = Buffer.from(userDeserialized!.split(".")[1], "base64")
+      setUser(JSON.parse(buffer.toString()))
+    })
+  }, [])
+
   return (
     <Navigator screenOptions={{ headerShown: false }}>
-      <Screen name="User" component={User} />
-      <Screen name="Home" component={Home} />
+      <Screen
+        name="Home"
+        component={user?.role === "Child" ? HomeChild : Home}
+      />
       <Screen
         name="Share"
         component={Share}
         initialParams={{ url: "https://example.com" }}
+      />
+      <Screen
+        name="User"
+        component={user?.role === "Child" ? UserChild : User}
       />
     </Navigator>
   )

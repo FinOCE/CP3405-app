@@ -8,9 +8,7 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  ListRenderItem,
-  ListRenderItemInfo,
-  Button
+  ListRenderItemInfo
 } from "react-native"
 
 // data sets temp
@@ -46,24 +44,27 @@ const DATA1: Apps[] = [
 const DATA2: User[] = [
   {
     userId: "1",
-    firstName: "First",
-    lastName: "Last",
-    nickName: "Nickname",
-    dateOfBirth: 0
+    firstName: "First First Name",
+    lastName: "first Last Name",
+    nickName: "Fuser",
+    dateOfBirth: 1997,
+    role: "Child"
   },
   {
     userId: "2",
-    firstName: "First",
-    lastName: "Last",
-    nickName: "Nickname",
-    dateOfBirth: 0
+    firstName: "Second First Name",
+    lastName: "Second Last Name",
+    nickName: "Suser",
+    dateOfBirth: 1997,
+    role: "Child"
   },
   {
     userId: "3",
-    firstName: "First",
-    lastName: "Last",
-    nickName: "Nickname",
-    dateOfBirth: 0
+    firstName: "Third First Name",
+    lastName: "Third Last Name",
+    nickName: "Tuser",
+    dateOfBirth: 1997,
+    role: "Parent"
   }
 ]
 // end of data sets
