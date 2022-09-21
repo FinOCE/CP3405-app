@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { AppStackParamList } from "navigation/AppStack"
+import { HomeStackParamList } from "navigation/AppStack"
 import {
   SafeAreaView,
   Image,
@@ -8,9 +8,7 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  ListRenderItem,
-  ListRenderItemInfo,
-  Button
+  ListRenderItemInfo
 } from "react-native"
 
 // data sets temp
@@ -45,22 +43,28 @@ const DATA1: Apps[] = [
 
 const DATA2: User[] = [
   {
-    user_id: "1",
-    first_name: "First First Name",
-    last_name: "first Last Name",
-    date_of_birth: 1997
+    userId: "1",
+    firstName: "First First Name",
+    lastName: "first Last Name",
+    nickName: "Fuser",
+    dateOfBirth: 1997,
+    role: "Child"
   },
   {
-    user_id: "2",
-    first_name: "Second First Name",
-    last_name: "Second Last Name",
-    date_of_birth: 1997
+    userId: "2",
+    firstName: "Second First Name",
+    lastName: "Second Last Name",
+    nickName: "Suser",
+    dateOfBirth: 1997,
+    role: "Child"
   },
   {
-    user_id: "3",
-    first_name: "Third First Name",
-    last_name: "Third Last Name",
-    date_of_birth: 1997
+    userId: "3",
+    firstName: "Third First Name",
+    lastName: "Third Last Name",
+    nickName: "Tuser",
+    dateOfBirth: 1997,
+    role: "Parent"
   }
 ]
 // end of data sets
@@ -109,8 +113,8 @@ const AppList = () => {
 // user list
 const UserInfo = (user: User) => (
   <View style={styles.item}>
-    <Text style={styles.title}>{user.user_id}</Text>
-    <Text style={styles.title}>{user.first_name}</Text>
+    <Text style={styles.title}>{user.userId}</Text>
+    <Text style={styles.title}>{user.firstName}</Text>
   </View>
 )
 
@@ -124,7 +128,7 @@ const UserInfoList = () => {
       <FlatList
         data={DATA2}
         renderItem={renderItem}
-        keyExtractor={userInfo => userInfo.user_id}
+        keyExtractor={userInfo => userInfo.userId}
       />
     </SafeAreaView>
   )
@@ -157,7 +161,7 @@ const styles = StyleSheet.create({
 export default function Home({
   route,
   navigation
-}: NativeStackScreenProps<AppStackParamList, "Home">) {
+}: NativeStackScreenProps<HomeStackParamList, "Home">) {
   return (
     <View style={styles.container}>
       <View style={{ flex: 5 }}>

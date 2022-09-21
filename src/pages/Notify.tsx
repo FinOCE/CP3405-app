@@ -31,7 +31,8 @@ const exampleUser: API.Vertex<User, "user"> = {
     dateOfBirth: [{ id: "dobprop", value: 0 }],
     firstName: [{ id: "firstprop", value: "First" }],
     lastName: [{ id: "lastprop", value: "Last" }],
-    nickName: [{ id: "nickprop", value: "nick" }]
+    nickName: [{ id: "nickprop", value: "nick" }],
+    role: [{ id: "roleprop", value: "Child" }]
   },
   type: "vertex"
 }

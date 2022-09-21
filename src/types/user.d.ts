@@ -4,4 +4,5 @@ type User = {
   lastName: string
   nickName: string
   dateOfBirth: number
+  role: "Parent" | "Child"
 }
