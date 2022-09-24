@@ -1,50 +1,46 @@
-import EventEmitter from "events"
-
-export default class NotificationManager extends EventEmitter {
-  private static instance?: NotificationManager
-
+export default class NotificationManager {
   /**
-   * Get the singleton instance of the notification manager
+   * Check if a notification is a new invite
    */
-  public static getInstance(): NotificationManager {
-    if (!NotificationManager.instance)
-      NotificationManager.instance = new NotificationManager()
-    return NotificationManager.instance
+  public static isInviteAdd(
+    notification: Noti.Unknown
+  ): notification is Noti.InviteAdd {
+    return notification.type === "inviteAdd"
   }
 
   /**
-   * Check if a notification is a child request accept
+   * Check if a notification is an invite being accepted
    */
-  public static isChildRequestAccept(
+  public static isInviteAccept(
     notification: Noti.Unknown
-  ): notification is Noti.ChildRequestAccept {
-    return notification.type === "childRequestAccept"
+  ): notification is Noti.InviteAccept {
+    return notification.type === "inviteAccept"
   }
 
   /**
-   * Check if a notification is a child request decline
+   * Check if a notification is an invite being declined
    */
-  public static isChildRequestDecline(
+  public static isInviteDecline(
     notification: Noti.Unknown
-  ): notification is Noti.ChildRequestDecline {
-    return notification.type === "childRequestDecline"
+  ): notification is Noti.InviteDecline {
+    return notification.type === "inviteDecline"
   }
 
   /**
    * Check if a notification is a new app
    */
-  public static isNewApp(
+  public static isAppAdd(
     notification: Noti.Unknown
-  ): notification is Noti.NewApp {
-    return notification.type === "newApp"
+  ): notification is Noti.AppAdd {
+    return notification.type === "appAdd"
   }
 
   /**
-   * Check if a notification is a child request
+   * Check if a notification is an app being removed
    */
-  public static isChildRequest(
+  public static isAppRemove(
     notification: Noti.Unknown
-  ): notification is Noti.ChildRequest {
-    return notification.type === "childRequest"
+  ): notification is Noti.AppRemove {
+    return notification.type === "appRemove"
   }
 }

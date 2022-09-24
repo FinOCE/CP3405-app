@@ -5,78 +5,30 @@ export type NotificationProps = {
   data: Noti.Unknown
 }
 
-const date = new Date(),
-    options: any = {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    };
-    const time = date.toLocaleDateString("en", options);
-
 export default function Notification(props: NotificationProps) {
-  // Render child request accept notifications
-  if (NotificationManager.isChildRequestAccept(props.data))
+  /**
+   * Humanize a unix timestamp
+   */
+  const timestamp = new Date(props.data.timestamp).toLocaleDateString("en", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  })
+
+  // Render new invite notifications
+  if (NotificationManager.isInviteAdd(props.data)) {
+    const { firstName, lastName } = props.data.child.properties
+    const name = firstName[0].value + " " + lastName[0].value
+
     return (
       <>
         <View style={styles.parentContainer}>
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
             <Text style={styles.contactsName}>
-              {props.data.parent.id} accepted your request<br></br>
-              {time}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
-      </>
-    )
-
-  // Render child request decline notifications
-  if (NotificationManager.isChildRequestDecline(props.data))
-    return (
-      <div>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {props.data.parent.id} declined your request<br></br>
-              {time}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
-      </div>
-    )
-
-  // Render new app notifications
-  if (NotificationManager.isNewApp(props.data))
-    // TODO: Implement app notification once type created
-    return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              You have a new app request: {props.data.app.id}<br></br>
-              {time}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
-      </>
-    )
-
-  // Render child request notifications
-  if (NotificationManager.isChildRequest(props.data))
-    return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {props.data.child.id} requested to be your child<br></br>
-              {time}
+              {name} requested to be your child<br></br>
+              {timestamp}
             </Text>
           </View>
         </View>
@@ -92,6 +44,88 @@ export default function Notification(props: NotificationProps) {
         </View>
       </>
     )
+  }
+
+  // Render invite accept notifications
+  if (NotificationManager.isInviteAccept(props.data)) {
+    const { firstName, lastName } = props.data.parent.properties
+    const name = firstName[0].value + " " + lastName[0].value
+
+    return (
+      <>
+        <View style={styles.parentContainer}>
+          <View style={styles.containerLeft}>
+            <View style={styles.powderblue} />
+            <Text style={styles.contactsName}>
+              {name} accepted your request<br></br>
+              {timestamp}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactsPadding}></View>
+      </>
+    )
+  }
+
+  // Render invite decline notifications
+  if (NotificationManager.isInviteDecline(props.data)) {
+    const { firstName, lastName } = props.data.parent.properties
+    const name = firstName[0].value + " " + lastName[0].value
+
+    return (
+      <div>
+        <View style={styles.parentContainer}>
+          <View style={styles.containerLeft}>
+            <View style={styles.powderblue} />
+            <Text style={styles.contactsName}>
+              {name} declined your request<br></br>
+              {timestamp}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactsPadding}></View>
+      </div>
+    )
+  }
+
+  // Render new app notifications
+  if (NotificationManager.isAppAdd(props.data))
+    return (
+      <>
+        <View style={styles.parentContainer}>
+          <View style={styles.containerLeft}>
+            <View style={styles.powderblue} />
+            <Text style={styles.contactsName}>
+              You have a new app request:{" "}
+              {props.data.app.properties.name[0].value}
+              <br></br>
+              {timestamp}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactsPadding}></View>
+      </>
+    )
+
+  // Render app removed notifications
+  if (NotificationManager.isAppRemove(props.data))
+    return (
+      <>
+        <View style={styles.parentContainer}>
+          <View style={styles.containerLeft}>
+            <View style={styles.powderblue} />
+            <Text style={styles.contactsName}>
+              The app {props.data.app.properties.name[0].value} was removed from
+              your list
+              <br></br>
+              {timestamp}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactsPadding}></View>
+      </>
+    )
+
   return <Text>Error: Unknown notification received</Text>
 }
 
