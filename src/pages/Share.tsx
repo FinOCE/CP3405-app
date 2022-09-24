@@ -23,19 +23,23 @@ export default function Share() {
 
       <View style={styles.headingPadding}></View>
 
+      <View style={styles.textBox}>
+      <input type="text" placeholder="Write a message." />
+      </View>
+
       {items.map(item => (
         <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>{item.name}</Text>
-          </View>
+          <View style={styles.parentContainer}>
+            <View style={styles.containerLeft}>
+              <View style={styles.powderblue} />
+              <Text style={styles.contactsName}>{item.name}</Text>
+            </View>
 
-          <View style={styles.containerRight}>
-            <Button title="Send" />
+            <View style={styles.containerRight}>
+              <Button title="Send" />
+            </View>
           </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
+          <View style={styles.contactsPadding}></View>
         </>
       ))}
     </>
@@ -89,5 +93,8 @@ const styles = StyleSheet.create({
     width: 50,
     backgroundColor: "steelblue",
     marginLeft: 10
+  },
+  textBox: {
+    margin: 20,
   }
 })
