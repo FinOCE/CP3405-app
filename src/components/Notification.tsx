@@ -5,21 +5,31 @@ export type NotificationProps = {
   data: Noti.Unknown
 }
 
+const date = new Date(),
+    options: any = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    };
+    const time = date.toLocaleDateString("en", options);
+
 export default function Notification(props: NotificationProps) {
   // Render child request accept notifications
   if (NotificationManager.isChildRequestAccept(props.data))
     return (
-      <div>
+      <>
         <View style={styles.parentContainer}>
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
             <Text style={styles.contactsName}>
-              {props.data.parent.id} accepted your request
+              {props.data.parent.id} accepted your request<br></br>
+              {time}
             </Text>
           </View>
         </View>
         <View style={styles.contactsPadding}></View>
-      </div>
+      </>
     )
 
   // Render child request decline notifications
@@ -42,7 +52,7 @@ export default function Notification(props: NotificationProps) {
   if (NotificationManager.isNewApp(props.data))
     // TODO: Implement app notification once type created
     return (
-      <div>
+      <>
         <View style={styles.parentContainer}>
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
@@ -52,13 +62,13 @@ export default function Notification(props: NotificationProps) {
           </View>
         </View>
         <View style={styles.contactsPadding}></View>
-      </div>
+      </>
     )
 
   // Render child request notifications
   if (NotificationManager.isChildRequest(props.data))
     return (
-      <div>
+      <>
         <View style={styles.parentContainer}>
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
@@ -77,9 +87,9 @@ export default function Notification(props: NotificationProps) {
             <Button title="Decline" />
           </View>
         </View>
-      </div>
+      </>
     )
-  return <div>Error: Unknown notification received</div>
+  return <Text>Error: Unknown notification received</Text>
 }
 
 const styles = StyleSheet.create({
