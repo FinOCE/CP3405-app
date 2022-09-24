@@ -40,7 +40,8 @@ export default function Notification(props: NotificationProps) {
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
             <Text style={styles.contactsName}>
-              {props.data.parent.id} declined your request
+              {props.data.parent.id} declined your request<br></br>
+              {time}
             </Text>
           </View>
         </View>
@@ -57,7 +58,8 @@ export default function Notification(props: NotificationProps) {
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
             <Text style={styles.contactsName}>
-              You have a new app request: {props.data.app.id}
+              You have a new app request: {props.data.app.id}<br></br>
+              {time}
             </Text>
           </View>
         </View>
@@ -73,7 +75,8 @@ export default function Notification(props: NotificationProps) {
           <View style={styles.containerLeft}>
             <View style={styles.powderblue} />
             <Text style={styles.contactsName}>
-              {props.data.child.id} requested to be your child
+              {props.data.child.id} requested to be your child<br></br>
+              {time}
             </Text>
           </View>
         </View>
