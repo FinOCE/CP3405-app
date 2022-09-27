@@ -11,6 +11,7 @@ import {
   Text,
   ListRenderItemInfo
 } from "react-native"
+import { Buffer } from "buffer"
 // display current user
 
 const UserDisplay = () => {

@@ -39,6 +39,7 @@ export default class StorageManager extends EventEmitter {
       this.getInstance().emit("set", key, value)
       return true
     } catch (err) {
+      console.log("error occurred:", err)
       return false
     }
   }

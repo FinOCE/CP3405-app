@@ -64,7 +64,7 @@ export default function Register({
             padding: 10
           }}
         >
-          I need help with my using my device (Parent)
+          <Text>I need help with my using my device (Parent)</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setRole("Child")}
@@ -73,7 +73,7 @@ export default function Register({
             padding: 10
           }}
         >
-          I want to help someone using their device (Child)
+          <Text>I want to help someone using their device (Child)</Text>
         </TouchableOpacity>
       </View>
       {error && <Text style={styles.error}>Error: {error}</Text>}

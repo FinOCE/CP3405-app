@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import App from "components/App"
 import { StatusBar } from "expo-status-bar"
 import { HomeStackParamList } from "navigation/AppStack"
 import {
@@ -89,7 +90,7 @@ const Item = ({ title, description }: Apps) => (
         />
       </View>
       <View style={{ width: "70%" }}>
-        '<Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{title}</Text>
         <Text style={styles.title}>{description}</Text>
       </View>
     </View>
@@ -161,8 +162,40 @@ export default function Home({
   route,
   navigation
 }: NativeStackScreenProps<HomeStackParamList, "Home">) {
+  const example: {
+    app: API.Vertex<App, "app">
+    edge: API.Edge<AppEdge, "hasApp">
+  } = {
+    app: {
+      type: "vertex",
+      id: "com.psyonix.RL2D",
+      label: "app",
+      properties: {
+        userId: [{ id: "userId", value: "NO_AFFILIATED_USER" }],
+        appId: [{ id: "appId", value: "appId" }],
+        name: [{ id: "name", value: "name" }],
+        creator: [{ id: "creator", value: "creator" }],
+        iconUrl: [{ id: "iconUrl", value: "iconUrl" }]
+      }
+    },
+    edge: {
+      type: "edge",
+      id: "edge",
+      label: "hasApp",
+      inVLabel: "app",
+      outVLabel: "user",
+      inV: "app",
+      outV: "user",
+      properties: {
+        message: "hello world",
+        timestamp: 0
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
+      <App {...example} />
       <View style={{ flex: 5 }}>
         <UserInfoList />
         <AppList />
