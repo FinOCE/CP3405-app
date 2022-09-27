@@ -43,4 +43,22 @@ export default class NotificationManager {
   ): notification is Noti.AppRemove {
     return notification.type === "appRemove"
   }
+
+  /**
+   * Check if a notification is a child being removed
+   */
+  public static isChildRemove(
+    notification: Noti.Unknown
+  ): notification is Noti.ChildRemove {
+    return notification.type === "childRemove"
+  }
+
+  /**
+   * Check if a notification is a child being removed
+   */
+  public static isParentRemove(
+    notification: Noti.Unknown
+  ): notification is Noti.ParentRemove {
+    return notification.type === "parentRemove"
+  }
 }
