@@ -1,3 +1,4 @@
+import StorageManager from "managers/StorageManager"
 import fetch from "node-fetch"
 
 export default class RequestBuilder {
@@ -32,8 +33,6 @@ export default class RequestBuilder {
     return this
   }
 
-  // TODO: Add option to `useAuthorization` to append user token to header
-
   /**
    * Add handler for given status
    */
@@ -49,14 +48,17 @@ export default class RequestBuilder {
    * Submit the request to the API
    */
   public async submit(): Promise<void> {
+    const auth = await StorageManager.get("@user")
+
     await fetch("https://cp3405-api.azurewebsites.net" + this.route, {
       method: HttpMethod[this.method].toUpperCase(),
-      body: JSON.stringify(this.body)
+      body: JSON.stringify(this.body),
+      headers: auth ? { Authorization: auth } : undefined
     })
       .then(async res => ({ status: res.status, body: await res.json() }))
       .then(({ status, body }) => {
         if (this.handlers[status as HttpStatus])
-          this.handlers[status as HttpStatus]?.(body)
+          this.handlers[status as HttpStatus]!(body)
         else throw `Unexpected response: ${status}\n${JSON.stringify(body)}`
       })
   }
