@@ -36,10 +36,10 @@ const styles = StyleSheet.create({
   cardPage: {
     backgroundColor: "#ecf0f1",
     padding: 15,
-    marginTop: 100,
+    marginTop: 25,
+    marginBottom: 25,
     marginHorizontal: 5,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25
+    borderRadius: 25
   },
   cardBackground: {
     backgroundColor: "#9b59b6",
