@@ -2,12 +2,19 @@ import { StyleSheet, Text as TextBase } from "react-native"
 
 export type TextProps = {
   children: string
+  small?: boolean
 }
 
 export default function Text(props: TextProps) {
-  return <TextBase style={styles.text}>{props.children}</TextBase>
+  return (
+    <TextBase style={props.small ? styles.small : undefined}>
+      {props.children}
+    </TextBase>
+  )
 }
 
 const styles = StyleSheet.create({
-  text: {}
+  small: {
+    fontSize: 12
+  }
 })

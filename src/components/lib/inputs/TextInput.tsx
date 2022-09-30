@@ -1,7 +1,9 @@
 import {
   KeyboardTypeOptions,
   StyleSheet,
-  TextInput as TextInputBase
+  Text,
+  TextInput as TextInputBase,
+  View
 } from "react-native"
 
 export type TextInputProps = {
@@ -9,6 +11,7 @@ export type TextInputProps = {
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>
   type?: TextInputTypes
   placeholder?: string
+  label?: string
 }
 
 export enum TextInputTypes {
@@ -34,24 +37,35 @@ export default function TextInput(props: TextInputProps) {
 
   // Render component
   return (
-    <TextInputBase
-      style={styles.textInput}
-      keyboardType={keyboardType}
-      placeholder={props.placeholder}
-      value={props.value}
-      onChangeText={props.setValue}
-      secureTextEntry={isSecure}
-    />
+    <View>
+      {props.label && <Text style={styles.label}>{props.label}</Text>}
+      <TextInputBase
+        style={styles.textInput}
+        keyboardType={keyboardType}
+        placeholder={props.placeholder}
+        value={props.value}
+        onChangeText={props.setValue}
+        secureTextEntry={isSecure}
+      />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  label: {
+    marginTop: 5,
+    color: "grey"
+  },
+  required: {
+    color: "#e74c3c"
+  },
   textInput: {
     backgroundColor: "white",
     borderRadius: 5,
     marginVertical: 5,
     padding: 15,
     borderColor: "#bdc3c7",
-    borderWidth: 2
+    borderWidth: 2,
+    placeholderTextColor: "grey"
   }
 })
