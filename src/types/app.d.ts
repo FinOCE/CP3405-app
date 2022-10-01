@@ -5,3 +5,13 @@ type App = {
   creator: string
   iconUrl: string
 }
+
+type AppEdge = {
+  timestamp: number
+  message?: string
+}
+
+type AppResponse = {
+  app: API.Vertex<App, "app">
+  edge: API.Edge<AppEdge, "hasApp">
+}

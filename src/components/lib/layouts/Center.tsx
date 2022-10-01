@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native"
 
 export type CenterProps = {
   children: React.ReactNode
+  vertical?: boolean
 }
 
 export default function Center(props: CenterProps) {

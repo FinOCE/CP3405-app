@@ -16,7 +16,9 @@ export type ButtonProps = {
 }
 
 export enum ButtonTypes {
-  Inline
+  Cancel,
+  Inline,
+  Secondary
 }
 
 /**
@@ -28,9 +30,17 @@ export default function Button(props: ButtonProps) {
   let textStyle: StyleProp<TextStyle>
 
   switch (props.type) {
+    case ButtonTypes.Cancel:
+      buttonStyle = styles.cancelButton
+      textStyle = styles.cancelButtonText
+      break
     case ButtonTypes.Inline:
       buttonStyle = styles.inlineButton
       textStyle = styles.inlineButtonText
+      break
+    case ButtonTypes.Secondary:
+      buttonStyle = styles.secondaryButton
+      textStyle = styles.secondaryButtonText
       break
     default:
       buttonStyle = styles.baseButton
@@ -61,10 +71,32 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 17
   },
+  cancelButton: {
+    backgroundColor: "#e74c3c",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingVertical: 15
+  },
+  cancelButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 17
+  },
   inlineButton: {},
   inlineButtonText: {
     color: "#9b59b6",
     fontWeight: "bold",
     padding: 5
+  },
+  secondaryButton: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingVertical: 15
+  },
+  secondaryButtonText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 17
   }
 })
