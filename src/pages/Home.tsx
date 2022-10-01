@@ -1,94 +1,13 @@
+import React, { useEffect, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { HomeStackParamList } from "navigation/AppStack"
-import {
-  SafeAreaView,
-  Image,
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  ListRenderItem,
-  ListRenderItemInfo,
-  Button
-} from "react-native"
+import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 
-interface Props {
-  // any props that come into the component
-  id: string
-  title: string
-  description: string
-  im: string
-  usage: number
-}
+import AppList from "components/RenderAppList"
+import StorageManager from "managers/StorageManager"
 
-const DATA: Props[] = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First app",
-    description: "this ia an app",
-    im: "https://imgs.search.brave.com/eJFTgf0voEVPLCVmiAGoWPlU79tkBEPb03Rx01U_ULQ/rs:fit:474:225:1/g:ce/aHR0cHM6Ly90c2Uz/Lm1tLmJpbmcubmV0/L3RoP2lkPU9JUC5k/X2llYWJxQkVOZlh6/blhjRmhmMVFRSGFI/YSZwaWQ9QXBp",
-    usage: 12
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second app",
-    description: "this ia an app",
-    im: "https://imgs.search.brave.com/eJFTgf0voEVPLCVmiAGoWPlU79tkBEPb03Rx01U_ULQ/rs:fit:474:225:1/g:ce/aHR0cHM6Ly90c2Uz/Lm1tLmJpbmcubmV0/L3RoP2lkPU9JUC5k/X2llYWJxQkVOZlh6/blhjRmhmMVFRSGFI/YSZwaWQ9QXBp",
-    usage: 11
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third app",
-    description: "this ia an app",
-    im: "https://imaging.nikon.com/lineup/coolpix/p/p7000/img/sample/img_01.jpg",
-    usage: 10
-  }
-]
-
-const Item = ({ title, description, im }: Props) => (
-  <View style={styles.item}>
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        flexWrap: "wrap",
-        alignItems: "flex-start"
-      }}
-    >
-      <View style={{ width: "30%" }}>
-        <Image
-          style={styles.logo}
-          source={{
-            uri: im
-          }}
-        />
-      </View>
-      <View style={{ width: "70%" }}>
-        '<Text style={styles.title}>{title}</Text>
-        <Text style={styles.title}>{description}</Text>
-      </View>
-    </View>
-  </View>
-)
-
-const AppList = () => {
-  const renderItem = ({ item }: ListRenderItemInfo<Props>) => <Item {...item} />
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={DATA.sort((a, b) => b.usage - a.usage)}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-    </SafeAreaView>
-  )
-}
-
-const NavB = () => {
-  return
-}
+import { View, StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({
   container: {
@@ -116,10 +35,44 @@ export default function Home({
   route,
   navigation
 }: NativeStackScreenProps<HomeStackParamList, "Home">) {
+  const [user, setUser] = useState<User>()
+  const [Apps, setapps] = useState<
+    {
+      app: API.Vertex<App, "app">
+      edge: API.Edge<AppEdge, "hasApp">
+    }[]
+  >([])
+
+  useEffect(() => {
+    StorageManager.get("@user").then(jwt => {
+      const buffer = Buffer.from(jwt!.split(".")[1], "base64")
+      const user = JSON.parse(buffer.toString())
+      setUser(user)
+      console.log(user.userId)
+    })
+  })
+
+  const datasetapp = async () => {
+    new RequestBuilder()
+      .setRoute(`/users/${user?.userId}`)
+      .setMethod(HttpMethod.Get)
+      .on<undefined>(HttpStatus.Unauthorized, () => {})
+      .on<undefined>(HttpStatus.Forbidden, () => {})
+      .on<undefined>(HttpStatus.NotFound, () => {})
+      .on<
+        {
+          app: API.Vertex<App, "app">
+          edge: API.Edge<AppEdge, "hasApp">
+        }[]
+      >(HttpStatus.Ok, res => {
+        setapps(res.data)
+      })
+  }
+
   return (
     <View style={styles.container}>
       <View>
-        <AppList />
+        <AppList data={Apps} />
       </View>
       <StatusBar style="auto" />
     </View>

@@ -38,21 +38,40 @@ const exampleUser: API.Vertex<User, "user"> = {
 }
 
 // Create examples of different types of notifications
-const childRequestAccept: Noti.ChildRequestAccept = {
-  type: "childRequestAccept",
-  parent: exampleUser
+const childRequestAccept: Noti.InviteAccept = {
+  type: "inviteAccept",
+  parent: exampleUser,
+  timestamp: 0,
+  viewed: false
 }
-const childRequestDecline: Noti.ChildRequestDecline = {
-  type: "childRequestDecline",
-  parent: exampleUser
+const childRequestDecline: Noti.InviteDecline = {
+  type: "inviteDecline",
+  parent: exampleUser,
+  timestamp: 0,
+  viewed: false
 }
-const newApp: Noti.NewApp = {
-  type: "newApp",
-  app: { id: "appId", label: "app", properties: {}, type: "vertex" }
+const newApp: Noti.AppAdd = {
+  type: "appAdd",
+  app: {
+    id: "appId",
+    label: "app",
+    properties: {
+      userId: [{ id: "userId", value: "NO_AFFILIATED_USER" }],
+      appId: [{ id: "appId", value: "appId" }],
+      name: [{ id: "name", value: "name" }],
+      creator: [{ id: "creator", value: "creator" }],
+      iconUrl: [{ id: "iconUrl", value: "iconUrl" }]
+    },
+    type: "vertex"
+  },
+  timestamp: 0,
+  viewed: false
 }
-const childRequest: Noti.ChildRequest = {
-  type: "childRequest",
-  child: exampleUser
+const childRequest: Noti.InviteAdd = {
+  type: "inviteAdd",
+  child: exampleUser,
+  timestamp: 0,
+  viewed: false
 }
 
 // Put all notifications into a single array of unknowns (since this is how the API will respond)

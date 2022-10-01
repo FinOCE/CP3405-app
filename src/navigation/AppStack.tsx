@@ -37,13 +37,13 @@ function HomeStack() {
         component={user?.role === "Child" ? HomeChild : Home}
       />
       <Screen
+        name="User"
+        component={user?.role === "Child" ? UserChild : User}
+      />
+      <Screen
         name="Share"
         component={Share}
         initialParams={{ url: "https://example.com" }}
-      />
-      <Screen
-        name="User"
-        component={user?.role === "Child" ? UserChild : User}
       />
     </Navigator>
   )
