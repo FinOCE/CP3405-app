@@ -24,7 +24,7 @@ export default function Share() {
       <View style={styles.headingPadding}></View>
 
       <View style={styles.textBox}>
-      <input type="text" placeholder="Write a message." />
+        <input type="text" placeholder="Write a message." />
       </View>
 
       {items.map(item => (
@@ -95,6 +95,6 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   textBox: {
-    margin: 20,
+    margin: 20
   }
 })
