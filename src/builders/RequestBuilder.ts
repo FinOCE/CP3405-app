@@ -4,7 +4,7 @@ import fetch from "node-fetch"
 export default class RequestBuilder {
   public route: string = "/"
   public method: HttpMethod = HttpMethod.Get
-  public body: Record<any, any> = {}
+  public body?: Record<any, any>
   private handlers: Handlers = {}
 
   public constructor() {}
@@ -52,8 +52,8 @@ export default class RequestBuilder {
 
     await fetch("https://cp3405-api.azurewebsites.net" + this.route, {
       method: HttpMethod[this.method].toUpperCase(),
-      body: JSON.stringify(this.body),
-      headers: auth ? { Authorization: auth } : undefined
+      body: this.body ? JSON.stringify(this.body) : undefined,
+      headers: auth ? { authorization: `Bearer ${auth}` } : undefined
     })
       .then(async res => ({ status: res.status, body: await res.json() }))
       .then(({ status, body }) => {

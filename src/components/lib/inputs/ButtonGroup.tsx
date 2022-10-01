@@ -24,6 +24,7 @@ export default function ButtonGroup<T>(props: ButtonGroupProps<T>) {
     >
       {props.options.map(option => (
         <TouchableOpacity
+          key={option.label}
           style={
             option.value === props.value
               ? styles.buttonGroupOptionSelected
