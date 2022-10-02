@@ -7,7 +7,7 @@ import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 import AppList from "components/RenderAppList"
 import StorageManager from "managers/StorageManager"
 
-import { View, StyleSheet } from "react-native"
+import { Text, Image, View, StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({
   container: {
@@ -31,12 +31,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function Home({
-  route,
-  navigation
-}: NativeStackScreenProps<HomeStackParamList, "Home">) {
+export default function Home({}: NativeStackScreenProps<
+  HomeStackParamList,
+  "Home"
+>) {
   const [user, setUser] = useState<User>()
-  const [Apps, setapps] = useState<
+  const [apps, setapps] = useState<
     {
       app: API.Vertex<App, "app">
       edge: API.Edge<AppEdge, "hasApp">
@@ -49,30 +49,54 @@ export default function Home({
       const user = JSON.parse(buffer.toString())
       setUser(user)
       console.log(user.userId)
-    })
-  })
 
-  const datasetapp = async () => {
-    new RequestBuilder()
-      .setRoute(`/users/${user?.userId}`)
-      .setMethod(HttpMethod.Get)
-      .on<undefined>(HttpStatus.Unauthorized, () => {})
-      .on<undefined>(HttpStatus.Forbidden, () => {})
-      .on<undefined>(HttpStatus.NotFound, () => {})
-      .on<
-        {
-          app: API.Vertex<App, "app">
-          edge: API.Edge<AppEdge, "hasApp">
-        }[]
-      >(HttpStatus.Ok, res => {
-        setapps(res.data)
-      })
-  }
+      new RequestBuilder()
+        .setRoute(`/users/${user?.userId}/apps`)
+        .setMethod(HttpMethod.Get)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<undefined>(HttpStatus.NotFound, () => {})
+        .on<
+          {
+            app: API.Vertex<App, "app">
+            edge: API.Edge<AppEdge, "hasApp">
+          }[]
+        >(HttpStatus.Ok, res => {
+          setapps(res.data)
+        })
+        .submit()
+    })
+  }, [])
 
   return (
     <View style={styles.container}>
       <View>
-        <AppList data={Apps} />
+        {apps.map(app => (
+          <View style={styles.item}>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "flex-start"
+              }}
+            >
+              <View style={{ width: "30%" }}>
+                <Image
+                  style={styles.logo}
+                  source={{
+                    uri: app.app.properties.iconUrl[0].value
+                  }}
+                />
+              </View>
+              <View style={{ width: "70%" }}>
+                <Text style={styles.title}>
+                  {app.app.properties.name[0].value}
+                </Text>
+                <Text style={styles.title}>{app.edge.properties.message}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
       </View>
       <StatusBar style="auto" />
     </View>
