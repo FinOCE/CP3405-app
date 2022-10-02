@@ -1,41 +1,17 @@
 import React, { useEffect, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { HomeStackParamList } from "navigation/AppStack"
+import { HomeStackParamList, ProfileStackParamList } from "navigation/AppStack"
 import { Searchbar } from "react-native-paper"
 
 import UserInfoList from "components/RenderUserList"
 import UserDisplay from "components/UserDisplay"
 import StorageManager from "managers/StorageManager"
 
-import { View, StyleSheet } from "react-native"
+import { Text, View, StyleSheet } from "react-native"
 import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 
-const UserSearchbar = () => {
-  const [searchQuery, setSearchQuery] = React.useState("")
-
-  const onChangeSearch = (query: React.SetStateAction<string>) =>
-    setSearchQuery(query)
-
-  return (
-    <Searchbar
-      placeholder="Email"
-      onChangeText={onChangeSearch}
-      value={searchQuery}
-    />
-  )
-}
-
-const Links = () => {
-  return (
-    <View>
-      {
-        <UserSearchbar />
-        /*User search TEXT LINK AND QR CODE??? */
-      }
-    </View>
-  )
-}
+/*User search TEXT LINK AND QR CODE??? */
 
 const styles = StyleSheet.create({
   container: {
@@ -59,11 +35,12 @@ const styles = StyleSheet.create({
 })
 
 export default function UserChild({}: NativeStackScreenProps<
-  HomeStackParamList,
-  "User"
+  ProfileStackParamList,
+  "Profile"
 >) {
   const [user, setUser] = useState<User>()
   const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
+  const [email, setSearchQuery] = React.useState("")
 
   useEffect(() => {
     StorageManager.get("@user").then(jwt => {
@@ -71,12 +48,22 @@ export default function UserChild({}: NativeStackScreenProps<
       const user = JSON.parse(buffer.toString())
       setUser(user)
       console.log(user.userId)
-    })
-  })
 
-  const datasetusers = async () => {
+      new RequestBuilder()
+        .setRoute(`/users/${user?.userId}/parents`)
+        .setMethod(HttpMethod.Get)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+          setUsers(res.data)
+        })
+        .submit()
+    })
+  }, [])
+
+  const datasetuseremails = async () => {
     new RequestBuilder()
-      .setRoute(`/users/${user?.userId}/parents/{parentId?}`)
+      .setRoute(`/users?email=${email}`)
       .setMethod(HttpMethod.Get)
       .on<undefined>(HttpStatus.Unauthorized, () => {})
       .on<undefined>(HttpStatus.Forbidden, () => {})
@@ -86,24 +73,32 @@ export default function UserChild({}: NativeStackScreenProps<
       })
   }
 
-  const datasetuseremails = async () => {
-    new RequestBuilder()
-      .setRoute(`/${user?.email}=${???}`)
-      .setMethod(HttpMethod.Get)
-      .on<undefined>(HttpStatus.Unauthorized, () => {})
-      .on<undefined>(HttpStatus.Forbidden, () => {})
-      .on<undefined>(HttpStatus.NotFound, () => {})
-      .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
-        setUsers(res.data)
-      })
+  const UserSearchbar = () => {
+    const onChangeSearch = (query: React.SetStateAction<string>) =>
+      setSearchQuery(query)
+
+    return (
+      <Searchbar
+        placeholder="Email"
+        onChangeText={onChangeSearch}
+        value={email}
+      />
+    )
   }
 
   return (
     <View style={styles.container}>
       <View>
         <UserDisplay />
-        <UserInfoList data={users} />
-        <Links />
+        {users.map(user => (
+          <View style={styles.item}>
+            <Text style={styles.title}>
+              {user.properties.firstName[0].value}{" "}
+              {user.properties.lastName[0].value}
+            </Text>
+          </View>
+        ))}
+        <UserSearchbar />
       </View>
       <StatusBar style="auto" />
     </View>

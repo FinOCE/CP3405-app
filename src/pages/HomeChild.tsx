@@ -8,7 +8,7 @@ import AppList from "components/RenderAppList"
 import UserInfoList from "components/RenderUserList"
 import StorageManager from "managers/StorageManager"
 
-import { View, StyleSheet } from "react-native"
+import { Image, Text, View, StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({
   container: {
@@ -37,7 +37,7 @@ export default function Home({}: NativeStackScreenProps<
   "Home"
 >) {
   const [user, setUser] = useState<User>()
-  const [Apps, setapps] = useState<
+  const [apps, setapps] = useState<
     {
       app: API.Vertex<App, "app">
       edge: API.Edge<AppEdge, "hasApp">
@@ -51,43 +51,73 @@ export default function Home({}: NativeStackScreenProps<
       const user = JSON.parse(buffer.toString())
       setUser(user)
       console.log(user.userId)
+
+      new RequestBuilder()
+        .setRoute(`/users/${user?.userId}`)
+        .setMethod(HttpMethod.Get)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<undefined>(HttpStatus.NotFound, () => {})
+        .on<
+          {
+            app: API.Vertex<App, "app">
+            edge: API.Edge<AppEdge, "hasApp">
+          }[]
+        >(HttpStatus.Ok, res => {
+          setapps(res.data)
+        })
+        .submit()
+
+      new RequestBuilder()
+        .setRoute(`/users/${user?.userId}/parents`)
+        .setMethod(HttpMethod.Get)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<undefined>(HttpStatus.NotFound, () => {})
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+          setUsers(res.data)
+        })
+        .submit()
     })
-  })
-
-  const datasetapp = async () => {
-    new RequestBuilder()
-      .setRoute(`/users/${user?.userId}`)
-      .setMethod(HttpMethod.Get)
-      .on<undefined>(HttpStatus.Unauthorized, () => {})
-      .on<undefined>(HttpStatus.Forbidden, () => {})
-      .on<undefined>(HttpStatus.NotFound, () => {})
-      .on<
-        {
-          app: API.Vertex<App, "app">
-          edge: API.Edge<AppEdge, "hasApp">
-        }[]
-      >(HttpStatus.Ok, res => {
-        setapps(res.data)
-      })
-  }
-
-  const datasetusers = async () => {
-    new RequestBuilder()
-      .setRoute(`/users/${user?.userId}/parents/{parentId?}`)
-      .setMethod(HttpMethod.Get)
-      .on<undefined>(HttpStatus.Unauthorized, () => {})
-      .on<undefined>(HttpStatus.Forbidden, () => {})
-      .on<undefined>(HttpStatus.NotFound, () => {})
-      .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
-        setUsers(res.data)
-      })
-  }
+  }, [])
 
   return (
     <View style={styles.container}>
-      <View style={{ flex: 5 }}>
-        <UserInfoList data={users} />
-        <AppList data={Apps} />
+      <View>
+        {users.map(user => (
+          <View style={styles.item}>
+            <Text style={styles.title}>
+              {user.properties.firstName[0].value}{" "}
+              {user.properties.lastName[0].value}
+            </Text>
+          </View>
+        ))}
+        {apps.map(app => (
+          <View style={styles.item}>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "flex-start"
+              }}
+            >
+              <View style={{ width: "30%" }}>
+                <Image
+                  style={styles.logo}
+                  source={{
+                    uri: app.app.properties.iconUrl[0].value
+                  }}
+                />
+              </View>
+              <View style={{ width: "70%" }}>
+                <Text style={styles.title}>
+                  {app.app.properties.name[0].value}
+                </Text>
+                <Text style={styles.title}>{app.edge.properties.message}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
       </View>
       <StatusBar style="auto" />
     </View>

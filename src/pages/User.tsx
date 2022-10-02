@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { HomeStackParamList } from "navigation/AppStack"
+import { HomeStackParamList, ProfileStackParamList } from "navigation/AppStack"
 
 import UserInfoList from "components/RenderUserList"
 import UserDisplay from "components/UserDisplay"
 import StorageManager from "managers/StorageManager"
 
-import { View, StyleSheet } from "react-native"
+import { Text, View, StyleSheet } from "react-native"
 import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 
 const Links = () => {
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
 })
 
 export default function User({}: NativeStackScreenProps<
-  HomeStackParamList,
-  "Home"
+  ProfileStackParamList,
+  "Profile"
 >) {
   const [user, setUser] = useState<User>()
   const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
@@ -48,26 +48,33 @@ export default function User({}: NativeStackScreenProps<
       const user = JSON.parse(buffer.toString())
       setUser(user)
       console.log(user.userId)
-    })
-  })
 
-  const datasetusers = async () => {
-    new RequestBuilder()
-      .setRoute(`/users/${user?.userId}/parents/{parentId?}`)
-      .setMethod(HttpMethod.Get)
-      .on<undefined>(HttpStatus.Unauthorized, () => {})
-      .on<undefined>(HttpStatus.Forbidden, () => {})
-      .on<undefined>(HttpStatus.NotFound, () => {})
-      .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
-        setUsers(res.data)
-      })
-  }
+      new RequestBuilder()
+        .setRoute(`/users/${user?.userId}/parents`)
+        .setMethod(HttpMethod.Get)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<undefined>(HttpStatus.NotFound, () => {})
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+          setUsers(res.data)
+        })
+        .submit()
+    })
+  }, [])
 
   return (
     <View style={styles.container}>
       <View>
         <UserDisplay />
         <UserInfoList data={users} />
+        {users.map(user => (
+          <View style={styles.item}>
+            <Text style={styles.title}>
+              {user.properties.firstName[0].value}{" "}
+              {user.properties.lastName[0].value}
+            </Text>
+          </View>
+        ))}
         <Links />
       </View>
       <StatusBar style="auto" />
