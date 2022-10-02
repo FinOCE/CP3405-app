@@ -126,6 +126,50 @@ export default function Notification(props: NotificationProps) {
       </>
     )
 
+  // Render child remove notifications
+  if (NotificationManager.isChildRemove(props.data)) {
+    const { firstName, lastName } = props.data.parent.properties
+    const name = firstName[0].value + " " + lastName[0].value
+
+    return (
+      <>
+        <View style={styles.parentContainer}>
+          <View style={styles.containerLeft}>
+            <View style={styles.powderblue} />
+            <Text style={styles.contactsName}>
+              {name} removed you as their child
+              <br></br>
+              {timestamp}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactsPadding}></View>
+      </>
+    )
+  }
+
+  // Render parent remove notifications
+  if (NotificationManager.isParentRemove(props.data)) {
+    const { firstName, lastName } = props.data.child.properties
+    const name = firstName[0].value + " " + lastName[0].value
+
+    return (
+      <>
+        <View style={styles.parentContainer}>
+          <View style={styles.containerLeft}>
+            <View style={styles.powderblue} />
+            <Text style={styles.contactsName}>
+              {name} removed you as their parent
+              <br></br>
+              {timestamp}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactsPadding}></View>
+      </>
+    )
+  }
+
   return <Text>Error: Unknown notification received</Text>
 }
 

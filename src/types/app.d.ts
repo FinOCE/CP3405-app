@@ -11,3 +11,13 @@ type AppEdge = {
   message: string
   timestamp: number
 }
+
+type AppEdge = {
+  timestamp: number
+  message?: string
+}
+
+type AppResponse = {
+  app: API.Vertex<App, "app">
+  edge: API.Edge<AppEdge, "hasApp">
+}
