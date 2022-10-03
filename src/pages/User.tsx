@@ -1,83 +1,73 @@
-import { useEffect, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
-import { HomeStackParamList, ProfileStackParamList } from "navigation/AppStack"
-
-import UserInfoList from "components/RenderUserList"
+import User from "components/User"
 import UserDisplay from "components/UserDisplay"
-import StorageManager from "managers/StorageManager"
-
-import { Text, View, StyleSheet } from "react-native"
 import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
+import Page from "components/lib/layouts/Page"
+import useUser from "hooks/useUser"
+import { ProfileStackParamList } from "navigation/AppStack"
+import { useEffect, useState } from "react"
+import { StyleSheet, View } from "react-native"
+import Text from "components/lib/texts/Text"
+import Center from "components/lib/layouts/Center"
+import Heading from "components/lib/texts/Heading"
 
 const Links = () => {
   return <View>{/* TEXT LINK AND QR CODE??? */}</View>
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16
-  },
-  title: {
-    fontSize: 30
-  },
-  logo: {
-    width: 100,
-    height: 100
-  }
-})
+export default function Profile({
+  route,
+  navigation
+}: NativeStackScreenProps<ProfileStackParamList, "Profile">) {
+  const [loadingU, setLoadingU] = useState(true)
+  const [users, setUsers] = useState<UserResponse[]>([])
 
-export default function User({}: NativeStackScreenProps<
-  ProfileStackParamList,
-  "Profile"
->) {
-  const [user, setUser] = useState<User>()
-  const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
-
-  useEffect(() => {
-    StorageManager.get("@user").then(jwt => {
-      const buffer = Buffer.from(jwt!.split(".")[1], "base64")
-      const user = JSON.parse(buffer.toString())
-      setUser(user)
-      console.log(user.userId)
-
+  useUser(user => {
+    if (user !== null) {
       new RequestBuilder()
-        .setRoute(`/users/${user?.userId}/parents`)
         .setMethod(HttpMethod.Get)
+        .setRoute(`/users/${user?.userId}/child`)
         .on<undefined>(HttpStatus.Unauthorized, () => {})
         .on<undefined>(HttpStatus.Forbidden, () => {})
         .on<undefined>(HttpStatus.NotFound, () => {})
-        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+        .on<UserResponse[]>(HttpStatus.Ok, res => {
           setUsers(res.data)
         })
         .submit()
-    })
-  }, [])
+        .finally(() => setLoadingU(false))
+    }
+  })
 
   return (
-    <View style={styles.container}>
-      <View>
-        <UserDisplay />
-        <UserInfoList data={users} />
-        {users.map(user => (
-          <View style={styles.item}>
-            <Text style={styles.title}>
-              {user.properties.firstName[0].value}{" "}
-              {user.properties.lastName[0].value}
+    <Page>
+      <UserDisplay></UserDisplay>
+      <Heading>Your Connected Accounts</Heading>
+      <br />
+      <br />
+      <View style={styles.appGroup}>
+        {loadingU ? (
+          <Center>
+            <Text>Loading Users...</Text>
+          </Center>
+        ) : users.length === 0 ? (
+          <Center>
+            <Text>
+              You haven't connected to any friends and familys Accounts yet!
             </Text>
-          </View>
-        ))}
-        <Links />
+          </Center>
+        ) : (
+          users.map(user => <User key={user.user.id} {...user} />)
+        )}
       </View>
-      <StatusBar style="auto" />
-    </View>
+      <Links />
+    </Page>
   )
 }
+
+const styles = StyleSheet.create({
+  appGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 15
+  }
+})

@@ -6,3 +6,7 @@ type User = {
   dateOfBirth: number
   role: "Parent" | "Child"
 }
+
+type UserResponse = {
+  user: API.Vertex<User, "user">
+}
