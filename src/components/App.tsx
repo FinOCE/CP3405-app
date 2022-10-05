@@ -1,10 +1,5 @@
-import {
-  Image,
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity
-} from "react-native"
+import { Image, StyleSheet, Text, TouchableOpacity } from "react-native"
+import Launcher from "react-native-open-application"
 
 export type AppProps = {
   app: API.Vertex<App, "app">
@@ -16,18 +11,7 @@ export default function App(props: AppProps) {
     <TouchableOpacity
       onPress={() => {
         const id = props.app.properties.appId[0].value
-        /*
-          TODO: Find approach to launch by this ID
-
-          It seems like this is only possible if it can work with native code,
-          but Expo is messy when it comes to doing that. The link below is a
-          demo that may hopefully help with running native code in the Expo
-          app, because otherwise the entire project may need to be switched
-          over to just React Native...
-
-          https://www.youtube.com/watch?v=id0Im72UN6w
-          https://docs.expo.dev/workflow/customizing/
-        */
+        Launcher.openApplication(id)
       }}
     >
       <Image
@@ -45,3 +29,47 @@ const styles = StyleSheet.create({
     height: 100
   }
 })
+
+/**
+ * Display an example app using existing data (for testing only)
+ */
+export function ExampleApp() {
+  const data: {
+    app: API.Vertex<App, "app">
+    edge: API.Edge<AppEdge, "hasApp">
+  } = {
+    app: {
+      type: "vertex",
+      id: "com.psyonix.RL2D",
+      label: "app",
+      properties: {
+        userId: [{ id: "userId", value: "NO_AFFILIATED_USER" }],
+        appId: [{ id: "appId", value: "com.Psyonix.RL2D" }],
+        name: [{ id: "name", value: "Rocket League Sideswipe" }],
+        creator: [{ id: "creator", value: "Psyonix Studios" }],
+        iconUrl: [
+          {
+            id: "iconUrl",
+            value:
+              "https://play-lh.googleusercontent.com/ski1s0myO8SMx7hskLG-3s_mjw478BUPbBNZFhMZcGz0eeAt8mxm0DtQz6fpvmUnVLA=w240-h480-rw"
+          }
+        ]
+      }
+    },
+    edge: {
+      type: "edge",
+      id: "edge",
+      label: "hasApp",
+      inVLabel: "app",
+      outVLabel: "user",
+      inV: "app",
+      outV: "user",
+      properties: {
+        message: "hello world",
+        timestamp: 0
+      }
+    }
+  }
+
+  return <App {...data} />
+}
