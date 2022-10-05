@@ -20,17 +20,17 @@ export default function Profile({
   navigation
 }: NativeStackScreenProps<ProfileStackParamList, "Profile">) {
   const [loadingU, setLoadingU] = useState(true)
-  const [users, setUsers] = useState<UserResponse[]>([])
+  const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
 
   useUser(user => {
     if (user !== null) {
       new RequestBuilder()
         .setMethod(HttpMethod.Get)
-        .setRoute(`/users/${user?.userId}/child`)
+        .setRoute(`/users/${user?.userId}/children`)
         .on<undefined>(HttpStatus.Unauthorized, () => {})
         .on<undefined>(HttpStatus.Forbidden, () => {})
         .on<undefined>(HttpStatus.NotFound, () => {})
-        .on<UserResponse[]>(HttpStatus.Ok, res => {
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
           setUsers(res.data)
         })
         .submit()
@@ -56,7 +56,7 @@ export default function Profile({
             </Text>
           </Center>
         ) : (
-          users.map(user => <User key={user.user.id} {...user} />)
+          users.map(user => <User key={user.id} user={user} />)
         )}
       </View>
       <Links />

@@ -1,4 +1,3 @@
-import { Searchbar } from "react-native-paper"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import User from "components/User"
 import UserDisplay from "components/UserDisplay"
@@ -6,11 +5,13 @@ import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 import Page from "components/lib/layouts/Page"
 import useUser from "hooks/useUser"
 import { ProfileStackParamList } from "navigation/AppStack"
-import { useEffect, useState } from "react"
+import { SetStateAction, useEffect, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import Text from "components/lib/texts/Text"
 import Center from "components/lib/layouts/Center"
 import Heading from "components/lib/texts/Heading"
+import TextInput from "components/lib/inputs/TextInput"
+import ErrorDialogue from "components/lib/texts/ErrorDialogue"
 
 /*User search TEXT LINK AND QR CODE??? */
 
@@ -19,11 +20,12 @@ export default function Profile({
   navigation
 }: NativeStackScreenProps<ProfileStackParamList, "Profile">) {
   const [loadingU, setLoadingU] = useState(true)
-  const [loadingE, setLoadingE] = useState(false)
-  const [users, setUsers] = useState<UserResponse[]>([])
-  const [newusers, setNewUsers] = useState<UserResponse[]>([])
+  const [loadingE, setLoadingE] = useState(true)
+  const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
+  const [newusers, setNewUsers] = useState<API.Vertex<User, "user">[]>([])
+  const [error, setError] = useState<string>()
 
-  const [email, setSearchQuery] = useState("")
+  const [email, setSearchQuery] = useState<string>()
 
   useUser(user => {
     if (user !== null) {
@@ -33,7 +35,7 @@ export default function Profile({
         .on<undefined>(HttpStatus.Unauthorized, () => {})
         .on<undefined>(HttpStatus.Forbidden, () => {})
         .on<undefined>(HttpStatus.NotFound, () => {})
-        .on<UserResponse[]>(HttpStatus.Ok, res => {
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
           setUsers(res.data)
         })
         .submit()
@@ -47,24 +49,44 @@ export default function Profile({
       .setMethod(HttpMethod.Get)
       .on<undefined>(HttpStatus.Unauthorized, () => {})
       .on<undefined>(HttpStatus.Forbidden, () => {})
-      .on<undefined>(HttpStatus.NotFound, () => {})
-      .on<UserResponse[]>(HttpStatus.Ok, res => {
+      .on<undefined>(HttpStatus.NotFound, () => {
+        setError("Could not find a user with given email and password")
+      })
+      .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
         setNewUsers(res.data)
       })
       .submit()
-      .finally(() => setLoadingE(true))
+      .finally(() => addnewuser)
+  }
+
+  const addnewuser = async () => {
+    useUser(user => {
+      if (user !== null) {
+        new RequestBuilder()
+          .setRoute(`/users/${newusers[0].id}/invites/${user?.userId}`)
+          .setMethod(HttpMethod.Get)
+          .on<undefined>(HttpStatus.Unauthorized, () => {})
+          .on<undefined>(HttpStatus.Forbidden, () => {})
+          .on<undefined>(HttpStatus.NotFound, () => {})
+          .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+            setNewUsers(res.data)
+          })
+          .submit()
+          .finally(() => setLoadingE(false))
+      }
+    })
   }
 
   const UserSearchbar = () => {
-    const onChangeSearch = (query: React.SetStateAction<string>) =>
-      setSearchQuery(query)
-
     return (
-      <Searchbar
-        placeholder="Email"
-        onChangeText={onChangeSearch}
-        value={email}
-      />
+      <View>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          setValue={setSearchQuery}
+        />
+        <button onClick={datasetuseremails}></button>
+      </View>
     )
   }
 
@@ -86,13 +108,25 @@ export default function Profile({
             </Text>
           </Center>
         ) : (
-          users.map(user => <User key={user.user.id} {...user} />)
+          users.map(user => <User key={user.id} user={user} />)
         )}
       </View>
       <br />
       <br />
       <Heading>Add New Accounts</Heading>
       <UserSearchbar />
+
+      <View>
+        {loadingE ? (
+          <Center>
+            <Text>Checking For Account...</Text>
+          </Center>
+        ) : error ? (
+          <Center>{error && <ErrorDialogue message={error} />}</Center>
+        ) : (
+          <Text>Account Added</Text>
+        )}
+      </View>
     </Page>
   )
 }
