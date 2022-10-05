@@ -89,7 +89,7 @@ const Item = ({ title, description }: Apps) => (
         />
       </View>
       <View style={{ width: "70%" }}>
-        '<Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{title}</Text>
         <Text style={styles.title}>{description}</Text>
       </View>
     </View>

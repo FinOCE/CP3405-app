@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 import StorageManager from "managers/StorageManager"
 import UserChild from "pages/UserChild"
 import User from "pages/User"
+import { Buffer } from "buffer"
 
 export type HomeStackParamList = {
   Home: undefined
