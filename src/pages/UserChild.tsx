@@ -21,6 +21,8 @@ export default function Profile({
 }: NativeStackScreenProps<ProfileStackParamList, "Profile">) {
   const [loadingU, setLoadingU] = useState(true)
   const [loadingE, setLoadingE] = useState(true)
+  const [active, setactive] = useState(true)
+
   const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
   const [newusers, setNewUsers] = useState<API.Vertex<User, "user">[]>([])
   const [error, setError] = useState<string>()
@@ -44,6 +46,8 @@ export default function Profile({
   })
 
   const datasetuseremails = async () => {
+    setactive(false)
+    setLoadingE(true)
     new RequestBuilder()
       .setRoute(`/users?email=${email}`)
       .setMethod(HttpMethod.Get)
@@ -117,7 +121,9 @@ export default function Profile({
       <UserSearchbar />
 
       <View>
-        {loadingE ? (
+        {active ? (
+          <></>
+        ) : loadingE ? (
           <Center>
             <Text>Checking For Account...</Text>
           </Center>
