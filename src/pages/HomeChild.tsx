@@ -24,7 +24,7 @@ export default function Home({
     if (user !== null) {
       new RequestBuilder()
         .setMethod(HttpMethod.Get)
-        .setRoute(`/users/${user.userId}/apps`)
+        .setRoute(`/users/${user.userId}/apps`) // gets list of app
         .on<undefined>(HttpStatus.Unauthorized, () => {})
         .on<undefined>(HttpStatus.Forbidden, () => {})
         .on<AppResponse[]>(HttpStatus.Ok, res => {
@@ -35,7 +35,7 @@ export default function Home({
 
       new RequestBuilder()
         .setMethod(HttpMethod.Get)
-        .setRoute(`/users/${user?.userId}/parents`)
+        .setRoute(`/users/${user?.userId}/parents`) // get list of users
         .on<undefined>(HttpStatus.Unauthorized, () => {})
         .on<undefined>(HttpStatus.Forbidden, () => {})
         .on<undefined>(HttpStatus.NotFound, () => {})

@@ -2,10 +2,13 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import Heading from "./lib/texts/Heading"
 import Text from "./lib/texts/Text"
 
-export default function User(props: UserResponse) {
+type UserProps = { user: API.Vertex<User, "user"> }
+
+export default function User(props: UserProps) {
   // Open app
   function Open() {
-    console.log("open app view to that related to selceted user")
+    return props.user.properties.userId[0].value
+    console.log("get email")
   }
 
   // Render component
