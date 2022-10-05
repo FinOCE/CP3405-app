@@ -21,17 +21,18 @@ export default function Page(props: PageProps) {
     )
   else
     return (
-      <View style={styles.page}>
+      <ScrollView style={styles.page}>
         <StatusBar style="auto" />
         {props.children}
-      </View>
+      </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
   page: {
     backgroundColor: "#ecf0f1",
-    padding: 15
+    padding: 15,
+    height: "100%"
   },
   cardPage: {
     backgroundColor: "#ecf0f1",

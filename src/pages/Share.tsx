@@ -1,100 +1,159 @@
-import { Button, StyleSheet, Text, View } from "react-native"
+import { useState } from "react"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { HomeStackParamList } from "navigation/AppStack"
+import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
+import useUser from "hooks/useUser"
+import Heading from "components/lib/texts/Heading"
+import Text from "components/lib/texts/Text"
+import Page from "components/lib/layouts/Page"
+import TextInput from "components/lib/inputs/TextInput"
+import Center from "components/lib/layouts/Center"
+import { Image, StyleSheet, View } from "react-native"
+import Button, { ButtonTypes } from "components/lib/inputs/Button"
 
-export default function Share() {
-  type Item = {
-    name: string
-  }
+export default function Share({
+  route,
+  navigation
+}: NativeStackScreenProps<HomeStackParamList, "Share">) {
+  const [parents, setParents] = useState<API.Vertex<User, "user">[]>([])
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState<string>()
+  const [sent, setSent] = useState<Record<string, true>>({})
 
-  const items: Item[] = [
-    {
-      name: "Finley"
-    },
-    {
-      name: "Daniel"
-    },
-    {
-      name: "Naoki"
+  useUser(user => {
+    if (user !== null) {
+      // Fetch parents from API
+      new RequestBuilder()
+        .setRoute(`/users/${user.userId}/parents`)
+        .setMethod(HttpMethod.Get)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+          setParents(res.data)
+          setLoading(false)
+        })
+        .submit()
     }
-  ]
+  })
 
   return (
-    <>
-      <Text style={styles.headingStyle}>Contacts</Text>
+    <Page>
+      {/* Heading and description */}
+      <Heading>Share App</Heading>
+      <Text>
+        You can share this app with anyone you have connected to. This app will
+        show on their home page for easy access and installation.
+      </Text>
 
-      <View style={styles.headingPadding}></View>
-
-      <View style={styles.textBox}>
-        <input type="text" placeholder="Write a message." />
+      {/* App preview */}
+      <View style={styles.appContainer}>
+        <Image source={{ uri: route.params.iconUrl }} style={styles.appIcon} />
+        <View style={styles.appDetails}>
+          <Heading level={2}>{route.params.name}</Heading>
+          <Text>{route.params.creator}</Text>
+        </View>
       </View>
 
-      {items.map(item => (
-        <>
-          <View style={styles.parentContainer}>
-            <View style={styles.containerLeft}>
-              <View style={styles.powderblue} />
-              <Text style={styles.contactsName}>{item.name}</Text>
-            </View>
+      {/* Message */}
+      <TextInput
+        value={message}
+        setValue={setMessage}
+        placeholder="Describe what the app is for (Optional)"
+        label="Message"
+      />
 
-            <View style={styles.containerRight}>
-              <Button title="Send" />
+      {/* Connections */}
+      <Heading level={2}>Connections</Heading>
+      {loading ? (
+        <Center>
+          <Text>Loading users...</Text>
+        </Center>
+      ) : parents.length === 0 ? (
+        <Center>
+          <Text>You haven't connected with anyone who needs help!</Text>
+        </Center>
+      ) : (
+        parents.map(parent => {
+          const { firstName, lastName } = parent.properties
+          const name = firstName[0].value + " " + lastName[0].value
+
+          return (
+            <View style={styles.appContainer} key={parent.id}>
+              <View style={styles.personIcon} />
+              <View style={styles.personDetails}>
+                <Text bold>{parent.properties.nickName[0].value}</Text>
+                <Text>{name}</Text>
+              </View>
+              {sent[parent.id] ? (
+                <Button
+                  value="Send"
+                  type={ButtonTypes.Disabled}
+                  onClick={() => {}}
+                />
+              ) : (
+                <Button
+                  value="Send"
+                  onClick={() => {
+                    new RequestBuilder()
+                      .setRoute(
+                        `/users/${parent.id}/apps/${route.params.appId}`
+                      )
+                      .setMethod(HttpMethod.Put)
+                      .setBody({
+                        message,
+                        name: route.params.name,
+                        creator: route.params.creator,
+                        iconUrl: route.params.iconUrl
+                      })
+                      .on<undefined>(HttpStatus.Unauthorized, () => {})
+                      .on<undefined>(HttpStatus.Forbidden, () => {})
+                      .on<undefined>(HttpStatus.BadRequest, () => {})
+                      .on<undefined>(HttpStatus.Ok, () => {
+                        setSent({ ...sent, [parent.id]: true })
+                      })
+                      .submit()
+                  }}
+                />
+              )}
             </View>
-          </View>
-          <View style={styles.contactsPadding}></View>
-        </>
-      ))}
-    </>
+          )
+        })
+      )}
+    </Page>
   )
 }
 
 const styles = StyleSheet.create({
-  parentContainer: {
-    flexDirection: "row"
-  },
-  containerLeft: {
+  appContainer: {
+    display: "flex",
     flexDirection: "row",
-    width: "75%"
+    gap: 15,
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 15
   },
-  containerRight: {
-    width: "25%",
-    paddingRight: 10
+  appIcon: {
+    height: 100,
+    width: 100,
+    borderRadius: 10
   },
-  headingStyle: {
-    fontSize: 24,
-    textAlign: "center"
+  appDetails: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    flex: 1,
+    paddingBottom: 10
   },
-  headingPadding: {
-    height: 50
+  personDetails: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    flex: 1
   },
-  contactsName: {
-    paddingLeft: 10,
-    paddingTop: 12.5
-  },
-  sendButton: {
-    fontWeight: "bold",
-    paddingRight: 5
-  },
-  contactsPadding: {
-    height: 15
-  },
-  powderblue: {
-    height: 50,
-    width: 50,
-    backgroundColor: "powderblue",
-    marginLeft: 10
-  },
-  skyblue: {
-    height: 50,
-    width: 50,
-    backgroundColor: "skyblue",
-    marginLeft: 10
-  },
-  steelblue: {
-    height: 50,
-    width: 50,
-    backgroundColor: "steelblue",
-    marginLeft: 10
-  },
-  textBox: {
-    margin: 20
+  personIcon: {
+    height: 52,
+    width: 52,
+    borderRadius: 10,
+    backgroundColor: "#bdc3c7"
   }
 })

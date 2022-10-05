@@ -17,6 +17,7 @@ export type ButtonProps = {
 
 export enum ButtonTypes {
   Cancel,
+  Disabled,
   Inline,
   Secondary
 }
@@ -33,6 +34,10 @@ export default function Button(props: ButtonProps) {
     case ButtonTypes.Cancel:
       buttonStyle = styles.cancelButton
       textStyle = styles.cancelButtonText
+      break
+    case ButtonTypes.Disabled:
+      buttonStyle = styles.disabledButton
+      textStyle = styles.disabledButtonText
       break
     case ButtonTypes.Inline:
       buttonStyle = styles.inlineButton
@@ -79,6 +84,17 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: "white",
+    fontWeight: "bold",
+    fontSize: 17
+  },
+  disabledButton: {
+    backgroundColor: "#bdc3c7",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingVertical: 15
+  },
+  disabledButtonText: {
+    color: "#7f8c8d",
     fontWeight: "bold",
     fontSize: 17
   },
