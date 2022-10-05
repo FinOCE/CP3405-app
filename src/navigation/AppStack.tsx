@@ -14,7 +14,7 @@ import { Buffer } from "buffer"
 
 export type HomeStackParamList = {
   Home: undefined
-  Share: { url: string }
+  Share: Omit<App, "userId">
   User: undefined
 }
 
@@ -37,11 +37,7 @@ function HomeStack() {
         name="Home"
         component={user?.role === "Child" ? HomeChild : Home}
       />
-      <Screen
-        name="Share"
-        component={Share}
-        initialParams={{ url: "https://example.com" }}
-      />
+      <Screen name="Share" component={Share} />
       <Screen
         name="User"
         component={user?.role === "Child" ? UserChild : User}

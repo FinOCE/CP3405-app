@@ -18,8 +18,8 @@ export default function App(props: AppResponse) {
           source={{ uri: props.app.properties.iconUrl[0].value }}
           style={styles.appIcon}
         />
-        <View>
-          <Heading>{props.app.properties.name[0].value}</Heading>
+        <View style={styles.appText}>
+          <Heading level={2}>{props.app.properties.name[0].value}</Heading>
           <Text>{props.app.properties.creator[0].value}</Text>
         </View>
       </View>
@@ -46,10 +46,14 @@ const styles = StyleSheet.create({
   },
   appIcon: {
     height: 100,
-    width: 100
+    width: 100,
+    borderRadius: 10
   },
   appMessage: {
     paddingVertical: 10
+  },
+  appText: {
+    paddingBottom: 15
   }
 })
 

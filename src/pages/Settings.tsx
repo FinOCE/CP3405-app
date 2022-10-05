@@ -1,68 +1,44 @@
-import * as React from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
-import { SettingsStackParamList } from "navigation/AppStack"
-import { View, StyleSheet, Text, Button } from "react-native"
-import { List } from "react-native-paper"
+import Button, { ButtonTypes } from "components/lib/inputs/Button"
+import Center from "components/lib/layouts/Center"
+import Page from "components/lib/layouts/Page"
+import Heading from "components/lib/texts/Heading"
 import StorageManager from "managers/StorageManager"
-
-const MyComponent = () => {
-  const [expanded, setExpanded] = React.useState(true)
-
-  const handlePress = () => setExpanded(!expanded)
-
-  return (
-    <List.Section title="Settings">
-      <List.Accordion title="Display Setting">
-        <List.Item title="First item" />
-        <List.Item title="Second item" />
-      </List.Accordion>
-      <List.Accordion title="App Setting">
-        <List.Item title="First item" />
-        <List.Item title="Second item" />
-      </List.Accordion>
-      <List.Accordion title="User Setting">
-        <List.Item title="First item" />
-        <List.Item title="Second item" />
-        <Button
-          onPress={() => StorageManager.remove("@user")}
-          title={"Logout"}
-        />
-      </List.Accordion>
-    </List.Section>
-  )
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16
-  }
-})
+import { SettingsStackParamList } from "navigation/AppStack"
 
 export default function Settings({
   route,
   navigation
 }: NativeStackScreenProps<SettingsStackParamList, "Settings">) {
   return (
-    <View style={styles.container}>
-      <View style={{ flex: 5 }}>
-        <Text>Settings</Text>
-        <MyComponent />
+    <Page>
+      <Heading>Settings</Heading>
+      <br />
+      <Center>
         <Button
-          onPress={() => StorageManager.remove("@user")}
-          title={"Logout"}
+          onClick={() => {
+            const parentNavigator = navigation.getParent()!
+            parentNavigator.navigate("HomeStack", {
+              screen: "Share",
+              params: {
+                appId: "com.facebook.orca",
+                name: "Messenger",
+                creator: "Meta Platforms, Inc.",
+                iconUrl:
+                  "https://play-lh.googleusercontent.com/ldcQMpP7OaVmglCF6kGas9cY_K0PsJzSSosx2saw9KF1m3RHaEXpH_9mwBWaYnkmctk=w240-h480-rw"
+              }
+            })
+          }}
+          value="Share App (Demo)"
+          type={ButtonTypes.Inline}
         />
-      </View>
-      <StatusBar style="auto" />
-    </View>
+        <br />
+        <Button
+          onClick={() => StorageManager.remove("@user")}
+          value="Logout"
+          type={ButtonTypes.Cancel}
+        />
+      </Center>
+    </Page>
   )
 }
