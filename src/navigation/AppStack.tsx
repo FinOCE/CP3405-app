@@ -38,8 +38,31 @@ function HomeStack() {
         component={user?.role === "Child" ? HomeChild : Home}
       />
       <Screen name="Share" component={Share} />
+    </Navigator>
+  )
+}
+
+export type ProfileStackParamList = {
+  Profile: undefined
+}
+
+function ProfileStack() {
+  const { Navigator, Screen } = createStackNavigator<ProfileStackParamList>()
+
+  const [user, setUser] = useState<User>()
+
+  useEffect(() => {
+    // Fetch user from storage
+    StorageManager.get("@user").then(userDeserialized => {
+      const buffer = Buffer.from(userDeserialized!.split(".")[1], "base64")
+      setUser(JSON.parse(buffer.toString()))
+    })
+  }, [])
+
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
       <Screen
-        name="User"
+        name="Profile"
         component={user?.role === "Child" ? UserChild : User}
       />
     </Navigator>
@@ -81,6 +104,7 @@ export type AppStackParamList = {
   HomeStack: undefined
   NotificationsStack: undefined
   SettingsStack: undefined
+  ProfileStack: undefined
 }
 
 export default function AppStack({ user }: AppStackProps) {
@@ -94,6 +118,16 @@ export default function AppStack({ user }: AppStackProps) {
           title: "",
           tabBarIcon: ({ size, color }) => (
             <Icon color={color} size={size} name={"home"} />
+          )
+        }}
+      />
+      <Screen
+        name="ProfileStack"
+        component={ProfileStack}
+        options={{
+          title: "",
+          tabBarIcon: ({ size, color }) => (
+            <Icon color={color} size={size} name={"user"} />
           )
         }}
       />

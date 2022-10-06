@@ -1,127 +1,73 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
-import StorageManager from "managers/StorageManager"
-import { HomeStackParamList } from "navigation/AppStack"
+import User from "components/User"
+import UserDisplay from "components/UserDisplay"
+import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
+import Page from "components/lib/layouts/Page"
+import useUser from "hooks/useUser"
+import { ProfileStackParamList } from "navigation/AppStack"
 import { useEffect, useState } from "react"
-import {
-  SafeAreaView,
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  ListRenderItemInfo
-} from "react-native"
-import { Buffer } from "buffer"
-// display current user
-
-const UserDisplay = () => {
-  const [user, setUser] = useState<User>()
-  useEffect(() => {
-    StorageManager.get("@user").then(jwt => {
-      const buffer = Buffer.from(jwt!.split(".")[1], "base64")
-      console.log(buffer.toString())
-      setUser(JSON.parse(buffer.toString()))
-    })
-  }, [])
-  return (
-    <View>
-      {/* ADD USER IMAGE?? */}
-      <Text>
-        {user?.firstName} {user?.lastName}
-      </Text>
-    </View>
-  )
-}
-
-// start of data sets
-const DATA2: User[] = [
-  {
-    userId: "1",
-    firstName: "First",
-    lastName: "Last",
-    nickName: "Nickname",
-    dateOfBirth: 0,
-    role: "Child"
-  },
-  {
-    userId: "2",
-    firstName: "First",
-    lastName: "Last",
-    nickName: "Nickname",
-    dateOfBirth: 0,
-    role: "Child"
-  },
-  {
-    userId: "3",
-    firstName: "First",
-    lastName: "Last",
-    nickName: "Nickname",
-    dateOfBirth: 0,
-    role: "Child"
-  }
-]
-// end of data sets
-// user list
-const UserInfo = (user: User) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>
-      {user.firstName} {user.lastName}
-    </Text>
-  </View>
-)
-
-const UserInfoList = () => {
-  const renderItem = ({ item }: ListRenderItemInfo<User>) => (
-    <UserInfo {...item} />
-  )
-
-  return (
-    <FlatList
-      data={DATA2}
-      renderItem={renderItem}
-      keyExtractor={userInfo => userInfo.userId}
-    />
-  )
-}
-//end of user list code
+import { StyleSheet, View } from "react-native"
+import Text from "components/lib/texts/Text"
+import Center from "components/lib/layouts/Center"
+import Heading from "components/lib/texts/Heading"
 
 const Links = () => {
   return <View>{/* TEXT LINK AND QR CODE??? */}</View>
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16
-  },
-  title: {
-    fontSize: 30
-  },
-  logo: {
-    width: 100,
-    height: 100
-  }
-})
-
-export default function User({
+export default function Profile({
   route,
   navigation
-}: NativeStackScreenProps<HomeStackParamList, "Home">) {
+}: NativeStackScreenProps<ProfileStackParamList, "Profile">) {
+  const [loadingU, setLoadingU] = useState(true)
+  const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
+
+  useUser(user => {
+    if (user !== null) {
+      new RequestBuilder()
+        .setMethod(HttpMethod.Get)
+        .setRoute(`/users/${user?.userId}/children`)
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<undefined>(HttpStatus.NotFound, () => {})
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+          setUsers(res.data)
+        })
+        .submit()
+        .finally(() => setLoadingU(false))
+    }
+  })
+
   return (
-    <View style={styles.container}>
-      <View>
-        <UserDisplay />
-        <UserInfoList />
-        <Links />
+    <Page>
+      <UserDisplay></UserDisplay>
+      <Heading>Your Connected Accounts</Heading>
+      <br />
+      <br />
+      <View style={styles.appGroup}>
+        {loadingU ? (
+          <Center>
+            <Text>Loading Users...</Text>
+          </Center>
+        ) : users.length === 0 ? (
+          <Center>
+            <Text>
+              You haven't connected to any friends and familys Accounts yet!
+            </Text>
+          </Center>
+        ) : (
+          users.map(user => <User key={user.id} user={user} />)
+        )}
       </View>
-      <StatusBar style="auto" />
-    </View>
+      <Links />
+    </Page>
   )
 }
+
+const styles = StyleSheet.create({
+  appGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 15
+  }
+})

@@ -4,6 +4,12 @@ type App = {
   name: string
   creator: string
   iconUrl: string
+  // usage: number
+}
+
+type AppEdge = {
+  message: string
+  timestamp: number
 }
 
 type AppEdge = {

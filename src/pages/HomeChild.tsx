@@ -1,173 +1,94 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
+import App from "components/App"
+import User from "components/User"
+import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
+import Page from "components/lib/layouts/Page"
+import useUser from "hooks/useUser"
 import { HomeStackParamList } from "navigation/AppStack"
-import {
-  SafeAreaView,
-  Image,
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  ListRenderItemInfo
-} from "react-native"
-
-// data sets temp
-interface Apps {
-  // any props that come into the component
-  id: string
-  title: string
-  description: string
-  usage: number
-}
-
-const DATA1: Apps[] = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First app",
-    description: "this ia an app",
-    usage: 12
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second app",
-    description: "this ia an app",
-    usage: 11
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third app",
-    description: "this ia an app",
-    usage: 10
-  }
-]
-
-const DATA2: User[] = [
-  {
-    userId: "1",
-    firstName: "First First Name",
-    lastName: "first Last Name",
-    nickName: "Fuser",
-    dateOfBirth: 1997,
-    role: "Child"
-  },
-  {
-    userId: "2",
-    firstName: "Second First Name",
-    lastName: "Second Last Name",
-    nickName: "Suser",
-    dateOfBirth: 1997,
-    role: "Child"
-  },
-  {
-    userId: "3",
-    firstName: "Third First Name",
-    lastName: "Third Last Name",
-    nickName: "Tuser",
-    dateOfBirth: 1997,
-    role: "Parent"
-  }
-]
-// end of data sets
-
-// app list
-const Item = ({ title, description }: Apps) => (
-  <View style={styles.item}>
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        flexWrap: "wrap",
-        alignItems: "flex-start"
-      }}
-    >
-      <View style={{ width: "30%" }}>
-        <Image
-          style={styles.logo}
-          source={{
-            uri: "https://imgs.search.brave.com/eJFTgf0voEVPLCVmiAGoWPlU79tkBEPb03Rx01U_ULQ/rs:fit:474:225:1/g:ce/aHR0cHM6Ly90c2Uz/Lm1tLmJpbmcubmV0/L3RoP2lkPU9JUC5k/X2llYWJxQkVOZlh6/blhjRmhmMVFRSGFI/YSZwaWQ9QXBp"
-          }}
-        />
-      </View>
-      <View style={{ width: "70%" }}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.title}>{description}</Text>
-      </View>
-    </View>
-  </View>
-)
-
-const AppList = () => {
-  const renderItem = ({ item }: ListRenderItemInfo<Apps>) => <Item {...item} />
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={DATA1.sort((a, b) => b.usage - a.usage)}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-    </SafeAreaView>
-  )
-}
-// end of list code
-// user list
-const UserInfo = (user: User) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{user.userId}</Text>
-    <Text style={styles.title}>{user.firstName}</Text>
-  </View>
-)
-
-const UserInfoList = () => {
-  const renderItem = ({ item }: ListRenderItemInfo<User>) => (
-    <UserInfo {...item} />
-  )
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={DATA2}
-        renderItem={renderItem}
-        keyExtractor={userInfo => userInfo.userId}
-      />
-    </SafeAreaView>
-  )
-}
-//end of user list code
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16
-  },
-  title: {
-    fontSize: 30
-  },
-  logo: {
-    width: 100,
-    height: 100
-  }
-})
+import { useEffect, useState } from "react"
+import { StyleSheet, View } from "react-native"
+import Text from "components/lib/texts/Text"
+import Center from "components/lib/layouts/Center"
+import Heading from "components/lib/texts/Heading"
 
 export default function Home({
   route,
   navigation
 }: NativeStackScreenProps<HomeStackParamList, "Home">) {
+  const [loadingU, setLoadingU] = useState(true)
+  const [apps, setApps] = useState<Record<string, AppResponse[]>>({})
+  const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
+
+  useUser(user => {
+    if (user !== null) {
+      new RequestBuilder()
+        .setMethod(HttpMethod.Get)
+        .setRoute(`/users/${user?.userId}/parents`) // get list of users
+        .on<undefined>(HttpStatus.Unauthorized, () => {})
+        .on<undefined>(HttpStatus.Forbidden, () => {})
+        .on<undefined>(HttpStatus.NotFound, () => {})
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
+          setUsers(res.data)
+          console.log(res.data)
+
+          for (const parent of res.data) {
+            new RequestBuilder()
+              .setMethod(HttpMethod.Get)
+              .setRoute(`/users/${parent.id}/apps`) // gets list of app
+              .on<undefined>(HttpStatus.Unauthorized, () => {})
+              .on<undefined>(HttpStatus.Forbidden, () => {})
+              .on<AppResponse[]>(HttpStatus.Ok, res => {
+                setApps({ ...apps, [parent.id]: res.data })
+                console.log(res.data)
+              })
+              .submit()
+          }
+        })
+        .submit()
+        .finally(() => setLoadingU(false))
+    }
+  })
+
   return (
-    <View style={styles.container}>
-      <View style={{ flex: 5 }}>
-        <UserInfoList />
-        <AppList />
+    <Page>
+      <Heading>Your Connected Accounts</Heading>
+      <Text>
+        These are your connected friends and familys Accounts. Tap on them to
+        view there apps them.
+      </Text>
+      <br />
+      <br />
+      <View style={styles.appGroup}>
+        {loadingU ? (
+          <Center>
+            <Text>Loading Users...</Text>
+          </Center>
+        ) : users.length === 0 ? (
+          <Center>
+            <Text>
+              You haven't connected to any friends and familys Accounts yet!
+            </Text>
+          </Center>
+        ) : (
+          users.map(user => (
+            <View key={user.id}>
+              <User key={user.id} user={user} />
+              <View>
+                {apps[user.id] &&
+                  apps[user.id].map(app => <App {...app} key={app.app.id} />)}
+              </View>
+            </View>
+          ))
+        )}
       </View>
-      <StatusBar style="auto" />
-    </View>
+    </Page>
   )
 }
+
+const styles = StyleSheet.create({
+  appGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 15
+  }
+})

@@ -55,6 +55,10 @@ export default class RequestBuilder {
       body: this.body ? JSON.stringify(this.body) : undefined,
       headers: auth ? { authorization: `Bearer ${auth}` } : undefined
     })
+      .then(res => {
+        console.log(res)
+        return res
+      })
       .then(async res => ({ status: res.status, body: await res.json() }))
       .then(({ status, body }) => {
         if (this.handlers[status as HttpStatus])
