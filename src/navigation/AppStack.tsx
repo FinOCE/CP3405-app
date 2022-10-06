@@ -85,7 +85,6 @@ export type AppStackParamList = {
 
 export default function AppStack({ user }: AppStackProps) {
   const { Navigator, Screen } = createBottomTabNavigator<AppStackParamList>()
-  // TODO: Switch between parent and child page stacks depending on role of user (not available in this branch yet)
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen
@@ -106,7 +105,7 @@ export default function AppStack({ user }: AppStackProps) {
           tabBarIcon: ({ size, color }) => (
             <Icon color={color} size={size} name={"bell"} />
           ),
-          tabBarBadge: undefined // Fetch notification count to fill here (as a number)
+          tabBarBadge: undefined // TODO: Fetch notification count to fill here (as a number)
         }}
       />
       <Screen
@@ -119,7 +118,6 @@ export default function AppStack({ user }: AppStackProps) {
           )
         }}
       />
-      {/* Icons may not work, if so follow guide on https://github.com/oblador/react-native-vector-icons to implement natively */}
     </Navigator>
   )
 }
