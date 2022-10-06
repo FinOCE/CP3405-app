@@ -10,10 +10,13 @@ import { StyleSheet, View } from "react-native"
 
 export default function Notify() {
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState<string>()
   const [notifications, setNotifications] = useState<Noti.Unknown[]>([])
 
   useUser(user => {
     if (user !== null) {
+      setUserId(user.userId)
+
       new RequestBuilder()
         .setRoute(`/users/${user.userId}/notifications`)
         .setMethod(HttpMethod.Get)
@@ -43,7 +46,11 @@ export default function Notify() {
           </Center>
         ) : (
           notifications.map(notification => (
-            <Notification key={notification.timestamp} data={notification} />
+            <Notification
+              key={notification.timestamp}
+              data={notification}
+              userId={userId}
+            />
           ))
         )}
       </View>

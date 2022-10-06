@@ -1,3 +1,4 @@
+import RequestBuilder, { HttpMethod, HttpStatus } from "builders/RequestBuilder"
 import NotificationManager from "managers/NotificationManager"
 import { StyleSheet, View, Image } from "react-native"
 import Button, { ButtonTypes } from "./lib/inputs/Button"
@@ -5,6 +6,7 @@ import Text from "./lib/texts/Text"
 
 export type NotificationProps = {
   data: Noti.Unknown
+  userId: string | undefined
 }
 
 export default function Notification(props: NotificationProps) {
@@ -23,6 +25,9 @@ export default function Notification(props: NotificationProps) {
     const { firstName, lastName } = props.data.child.properties
     const name = firstName[0].value + " " + lastName[0].value
 
+    const parentId = props.userId!
+    const childId = props.data.child.id
+
     return (
       <View style={styles.notiContainer}>
         <View style={styles.notiDetails}>
@@ -33,9 +38,30 @@ export default function Notification(props: NotificationProps) {
           </View>
         </View>
         <View style={styles.notiActions}>
-          <Button onClick={() => {}} value="Accept" />
           <Button
-            onClick={() => {}}
+            onClick={() => {
+              new RequestBuilder()
+                .setRoute(`/users/${parentId}/children/${childId}`)
+                .setMethod(HttpMethod.Put)
+                .on<undefined>(HttpStatus.Unauthorized, () => {})
+                .on<undefined>(HttpStatus.Forbidden, () => {})
+                .on<API.Error>(HttpStatus.BadRequest, () => {})
+                .on<Noti.InviteAccept[]>(HttpStatus.Ok, () => {})
+                .submit()
+            }}
+            value="Accept"
+          />
+          <Button
+            onClick={() => {
+              new RequestBuilder()
+                .setRoute(`/users/${parentId}/invites/${childId}`)
+                .setMethod(HttpMethod.Delete)
+                .on<undefined>(HttpStatus.Unauthorized, () => {})
+                .on<undefined>(HttpStatus.Forbidden, () => {})
+                .on<API.Error>(HttpStatus.BadRequest, () => {})
+                .on<Noti.InviteDecline[]>(HttpStatus.Ok, () => {})
+                .submit()
+            }}
             value="Decline"
             type={ButtonTypes.Secondary}
           />
