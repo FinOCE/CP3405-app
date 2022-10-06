@@ -10,10 +10,12 @@ import { useEffect, useState } from "react"
 import StorageManager from "managers/StorageManager"
 import UserChild from "pages/UserChild"
 import User from "pages/User"
+import { Buffer } from "buffer"
 
 export type HomeStackParamList = {
   Home: undefined
-  Share: { url: string }
+  Share: Omit<App, "userId">
+  User: undefined
 }
 
 function HomeStack() {
@@ -35,11 +37,7 @@ function HomeStack() {
         name="Home"
         component={user?.role === "Child" ? HomeChild : Home}
       />
-      <Screen
-        name="Share"
-        component={Share}
-        initialParams={{ url: "https://example.com" }}
-      />
+      <Screen name="Share" component={Share} />
     </Navigator>
   )
 }
@@ -111,7 +109,6 @@ export type AppStackParamList = {
 
 export default function AppStack({ user }: AppStackProps) {
   const { Navigator, Screen } = createBottomTabNavigator<AppStackParamList>()
-  // TODO: Switch between parent and child page stacks depending on role of user (not available in this branch yet)
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen
@@ -142,7 +139,7 @@ export default function AppStack({ user }: AppStackProps) {
           tabBarIcon: ({ size, color }) => (
             <Icon color={color} size={size} name={"bell"} />
           ),
-          tabBarBadge: undefined // Fetch notification count to fill here (as a number)
+          tabBarBadge: undefined // TODO: Fetch notification count to fill here (as a number)
         }}
       />
       <Screen
@@ -155,7 +152,6 @@ export default function AppStack({ user }: AppStackProps) {
           )
         }}
       />
-      {/* Icons may not work, if so follow guide on https://github.com/oblador/react-native-vector-icons to implement natively */}
     </Navigator>
   )
 }

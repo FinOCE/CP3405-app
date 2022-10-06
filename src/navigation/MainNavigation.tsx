@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useEffect } from "react"
 import AppStack from "./AppStack"
 import AuthStack from "./AuthStack"
+import { Buffer } from "buffer"
 
 export default function MainNavigation() {
   const [user, setUser] = useState<User>()

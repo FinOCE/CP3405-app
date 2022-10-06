@@ -1,6 +1,10 @@
+const config = require('./config.json')
+
 module.exports = function(api) {
+  // Configure babel
   api.cache(true)
-  return {
+
+  const babelConfig = {
     presets: [ 'babel-preset-expo' ],
     plugins: [[
       'module-resolver',
@@ -13,4 +17,12 @@ module.exports = function(api) {
       }
     ]]
   }
+
+  // Handle mocks for native modules
+  if(!config.isEjected) {
+    babelConfig.plugins[0][1].alias['react-native-open-application$'] = './src/mocks/Launcher'
+  }
+
+  // Return babel config
+  return babelConfig
 }
