@@ -1,7 +1,7 @@
 import { StyleSheet, Text as TextBase } from "react-native"
 
 export type TextProps = {
-  children: string
+  children: React.ReactNode
   small?: boolean
 }
 

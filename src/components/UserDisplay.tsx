@@ -2,6 +2,7 @@ import StorageManager from "managers/StorageManager"
 import { useEffect, useState } from "react"
 import { View } from "react-native"
 import Heading from "components/lib/texts/Heading"
+import Text from "./lib/texts/Text"
 const UserDisplay = () => {
   const [user, setUser] = useState<User>()
   useEffect(() => {
@@ -15,6 +16,7 @@ const UserDisplay = () => {
     <View>
       {/* ADD USER IMAGE?? */}
       <Heading>{user?.firstName + " " + user?.lastName}</Heading>
+      <Text>{user?.nickName}</Text>
     </View>
   )
 }

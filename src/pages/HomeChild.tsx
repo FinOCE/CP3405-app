@@ -15,32 +15,34 @@ export default function Home({
   route,
   navigation
 }: NativeStackScreenProps<HomeStackParamList, "Home">) {
-  const [loadingA, setLoadingA] = useState(true)
   const [loadingU, setLoadingU] = useState(true)
-  const [apps, setApps] = useState<AppResponse[]>([])
-  const [users, setUsers] = useState<UserResponse[]>([])
+  const [apps, setApps] = useState<Record<string, AppResponse[]>>({})
+  const [users, setUsers] = useState<API.Vertex<User, "user">[]>([])
 
   useUser(user => {
     if (user !== null) {
-      new RequestBuilder()
-        .setMethod(HttpMethod.Get)
-        .setRoute(`/users/${user.userId}/apps`) // gets list of app
-        .on<undefined>(HttpStatus.Unauthorized, () => {})
-        .on<undefined>(HttpStatus.Forbidden, () => {})
-        .on<AppResponse[]>(HttpStatus.Ok, res => {
-          setApps(res.data)
-        })
-        .submit()
-        .finally(() => setLoadingA(false))
-
       new RequestBuilder()
         .setMethod(HttpMethod.Get)
         .setRoute(`/users/${user?.userId}/parents`) // get list of users
         .on<undefined>(HttpStatus.Unauthorized, () => {})
         .on<undefined>(HttpStatus.Forbidden, () => {})
         .on<undefined>(HttpStatus.NotFound, () => {})
-        .on<UserResponse[]>(HttpStatus.Ok, res => {
+        .on<API.Vertex<User, "user">[]>(HttpStatus.Ok, res => {
           setUsers(res.data)
+          console.log(res.data)
+
+          for (const parent of res.data) {
+            new RequestBuilder()
+              .setMethod(HttpMethod.Get)
+              .setRoute(`/users/${parent.id}/apps`) // gets list of app
+              .on<undefined>(HttpStatus.Unauthorized, () => {})
+              .on<undefined>(HttpStatus.Forbidden, () => {})
+              .on<AppResponse[]>(HttpStatus.Ok, res => {
+                setApps({ ...apps, [parent.id]: res.data })
+                console.log(res.data)
+              })
+              .submit()
+          }
         })
         .submit()
         .finally(() => setLoadingU(false))
@@ -68,28 +70,15 @@ export default function Home({
             </Text>
           </Center>
         ) : (
-          users.map(user => <User key={user.user.id} {...user} />)
-        )}
-      </View>
-
-      <Heading>their Apps</Heading>
-      <Text>
-        These apps have been recommended to your selected connected friend or
-        family account.
-      </Text>
-      <br />
-      <br />
-      <View style={styles.appGroup}>
-        {loadingA ? (
-          <Center>
-            <Text>Loading apps...</Text>
-          </Center>
-        ) : apps.length === 0 ? (
-          <Center>
-            <Text>they haven't been recommended any apps yet!</Text>
-          </Center>
-        ) : (
-          apps.map(app => <App key={app.app.id} {...app} />)
+          users.map(user => (
+            <View key={user.id}>
+              <User key={user.id} user={user} />
+              <View>
+                {apps[user.id] &&
+                  apps[user.id].map(app => <App {...app} key={app.app.id} />)}
+              </View>
+            </View>
+          ))
         )}
       </View>
     </Page>
