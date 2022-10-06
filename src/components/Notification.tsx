@@ -1,5 +1,7 @@
 import NotificationManager from "managers/NotificationManager"
-import { StyleSheet, Text, Button, View } from "react-native"
+import { StyleSheet, View, Image } from "react-native"
+import Button, { ButtonTypes } from "./lib/inputs/Button"
+import Text from "./lib/texts/Text"
 
 export type NotificationProps = {
   data: Noti.Unknown
@@ -10,7 +12,7 @@ export default function Notification(props: NotificationProps) {
    * Humanize a unix timestamp
    */
   const timestamp = new Date(props.data.timestamp).toLocaleDateString("en", {
-    weekday: "long",
+    weekday: "short",
     year: "numeric",
     month: "long",
     day: "numeric"
@@ -22,27 +24,23 @@ export default function Notification(props: NotificationProps) {
     const name = firstName[0].value + " " + lastName[0].value
 
     return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {name} requested to be your child<br></br>
-              {timestamp}
-            </Text>
+      <View style={styles.notiContainer}>
+        <View style={styles.notiDetails}>
+          <View style={styles.userImagePreview} />
+          <View>
+            <Text>{name} has requested to help manage your apps.</Text>
+            <Text small>{timestamp}</Text>
           </View>
         </View>
-
-        <View style={styles.parentContainer}>
-          <View style={styles.acceptContainer}>
-            <Button title="Accept" />
-          </View>
-
-          <View style={styles.declineContainer}>
-            <Button title="Decline" />
-          </View>
+        <View style={styles.notiActions}>
+          <Button onClick={() => {}} value="Accept" />
+          <Button
+            onClick={() => {}}
+            value="Decline"
+            type={ButtonTypes.Secondary}
+          />
         </View>
-      </>
+      </View>
     )
   }
 
@@ -52,18 +50,15 @@ export default function Notification(props: NotificationProps) {
     const name = firstName[0].value + " " + lastName[0].value
 
     return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {name} accepted your request<br></br>
-              {timestamp}
-            </Text>
+      <View style={styles.notiContainer}>
+        <View style={styles.notiDetails}>
+          <View style={styles.userImagePreview} />
+          <View>
+            <Text>{name} has accepted your request to help them.</Text>
+            <Text small>{timestamp}</Text>
           </View>
         </View>
-        <View style={styles.contactsPadding}></View>
-      </>
+      </View>
     )
   }
 
@@ -73,79 +68,53 @@ export default function Notification(props: NotificationProps) {
     const name = firstName[0].value + " " + lastName[0].value
 
     return (
-      <div>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {name} declined your request<br></br>
-              {timestamp}
-            </Text>
+      <View style={styles.notiContainer}>
+        <View style={styles.notiDetails}>
+          <View style={styles.userImagePreview} />
+          <View>
+            <Text>{name} has declined your request to help them.</Text>
+            <Text small>{timestamp}</Text>
           </View>
         </View>
-        <View style={styles.contactsPadding}></View>
-      </div>
+      </View>
     )
   }
 
   // Render new app notifications
-  if (NotificationManager.isAppAdd(props.data))
+  if (NotificationManager.isAppAdd(props.data)) {
     return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              You have a new app request:{" "}
+      <View style={styles.notiContainer}>
+        <View style={styles.notiDetails}>
+          <Image
+            source={{ uri: props.data.app.properties.iconUrl[0].value }}
+            style={styles.appIcon}
+          />
+          <View style={styles.notiText}>
+            <Text>
+              You have a new app! Check your home page to launch{" "}
               {props.data.app.properties.name[0].value}
-              <br></br>
-              {timestamp}
             </Text>
+
+            {props.data.message && <Text italic>{props.data.message}</Text>}
+
+            <Text small>{timestamp}</Text>
           </View>
         </View>
-        <View style={styles.contactsPadding}></View>
-      </>
+      </View>
     )
+  }
 
   // Render app removed notifications
-  if (NotificationManager.isAppRemove(props.data))
-    return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              The app {props.data.app.properties.name[0].value} was removed from
-              your list
-              <br></br>
-              {timestamp}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
-      </>
-    )
+  if (NotificationManager.isAppRemove(props.data)) {
+    // TODO: Not implemented
+  }
 
   // Render child remove notifications
   if (NotificationManager.isChildRemove(props.data)) {
     const { firstName, lastName } = props.data.parent.properties
     const name = firstName[0].value + " " + lastName[0].value
 
-    return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {name} removed you as their child
-              <br></br>
-              {timestamp}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
-      </>
-    )
+    // TODO: Not implemented
   }
 
   // Render parent remove notifications
@@ -153,64 +122,45 @@ export default function Notification(props: NotificationProps) {
     const { firstName, lastName } = props.data.child.properties
     const name = firstName[0].value + " " + lastName[0].value
 
-    return (
-      <>
-        <View style={styles.parentContainer}>
-          <View style={styles.containerLeft}>
-            <View style={styles.powderblue} />
-            <Text style={styles.contactsName}>
-              {name} removed you as their parent
-              <br></br>
-              {timestamp}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contactsPadding}></View>
-      </>
-    )
+    // TODO: Not implemented
   }
 
   return <Text>Error: Unknown notification received</Text>
 }
 
 const styles = StyleSheet.create({
-  acceptContainer: {
-    width: "30%",
-    marginTop: "10px",
-    marginLeft: "10%",
-    marginRight: "10%"
+  notiContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 15
   },
-  declineContainer: {
-    width: "30%",
-    marginTop: "10px",
-    marginLeft: "10%",
-    marginRight: "10%"
-  },
-  parentContainer: {
-    flexDirection: "row"
-  },
-  containerLeft: {
+  notiDetails: {
+    display: "flex",
     flexDirection: "row",
-    width: "75%"
+    alignItems: "center",
+    gap: 15
   },
-  containerRight: {
-    width: "25%"
+  notiText: {
+    flex: 1,
+    flexWrap: "wrap",
+    gap: 5
   },
-  contactsName: {
-    paddingLeft: 10,
-    paddingTop: 12.5
+  userImagePreview: {
+    height: 52,
+    width: 52,
+    backgroundColor: "#bdc3c7",
+    borderRadius: 10
   },
-  sendButton: {
-    fontWeight: "bold",
-    paddingTop: 12.5
+  appIcon: {
+    height: 52,
+    width: 52,
+    borderRadius: 10
   },
-  contactsPadding: {
-    height: 15
-  },
-  powderblue: {
-    height: 50,
-    width: 50,
-    backgroundColor: "powderblue",
-    marginLeft: 10
+  notiActions: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 15
   }
 })
